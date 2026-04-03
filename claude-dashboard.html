@@ -6,131 +6,204 @@
 <title>Claude Session Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  :root {
-    --bg: #0f1117; --card: #1a1d2e; --card2: #1e2235;
-    --accent: #7c6ef5; --accent2: #5eead4;
-    --warn: #f59e0b; --danger: #ef4444; --ok: #22c55e;
-    --text: #e2e8f0; --muted: #64748b; --border: #2d3148;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; }
-  header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
-  header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
-  header h1 span { color: var(--accent); }
-  .gen-time { font-size: 12px; color: var(--muted); }
-  .refresh-btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 7px 16px; font-size: 13px; cursor: pointer; font-weight: 500; }
-  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
-  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-  .kpi-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
-  .kpi-value { font-size: 28px; font-weight: 700; line-height: 1; }
-  .kpi-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
-  .kpi.accent .kpi-value { color: var(--accent); }
-  .kpi.teal .kpi-value { color: var(--accent2); }
-  .kpi.warn .kpi-value { color: var(--warn); }
-  .kpi.ok .kpi-value { color: var(--ok); }
-  .window-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
-  .window-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-  .progress-bar-outer { background: var(--border); border-radius: 99px; height: 12px; overflow: hidden; margin-bottom: 8px; }
-  .progress-bar-inner { height: 100%; border-radius: 99px; }
-  .bar-ok { background: linear-gradient(90deg, var(--ok), var(--accent2)); }
-  .bar-warn { background: linear-gradient(90deg, var(--warn), #f97316); }
-  .bar-danger { background: linear-gradient(90deg, var(--danger), #dc2626); }
-  .progress-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
-  .countdown { font-size: 32px; font-weight: 700; color: var(--accent); margin-top: 10px; }
-  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-  @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
-  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-  .chart-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-  .chart-wrap { position: relative; height: 220px; }
-  .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-  .table-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; color: var(--muted); font-weight: 500; padding: 8px 12px; border-bottom: 1px solid var(--border); }
-  td { padding: 10px 12px; border-bottom: 1px solid rgba(45,49,72,.5); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(124,110,245,.05); }
-  .model-badge { background: var(--border); border-radius: 6px; padding: 2px 8px; font-size: 11px; white-space: nowrap; }
-  .model-badge.sonnet { background: rgba(124,110,245,.2); color: var(--accent); }
-  .model-badge.haiku { background: rgba(94,234,212,.15); color: var(--accent2); }
-  .model-badge.opus { background: rgba(251,191,36,.15); color: var(--warn); }
-  .size-bar { display: inline-block; background: var(--accent); height: 6px; border-radius: 3px; vertical-align: middle; margin-left: 8px; opacity: .6; }
-  .title-cell { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .token-num { font-family: monospace; color: var(--accent2); }
-  footer { text-align: center; padding: 24px; color: var(--muted); font-size: 12px; }
+:root{--bg:#0f1117;--card:#1a1d2e;--accent:#7c6ef5;--accent2:#5eead4;--warn:#f59e0b;--danger:#ef4444;--ok:#22c55e;--text:#e2e8f0;--muted:#64748b;--border:#2d3148;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;}
+header{background:var(--card);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;}
+header h1{font-size:18px;font-weight:600;letter-spacing:-.3px;}
+.accent-text{color:var(--accent);}
+.gen-time{font-size:12px;color:var(--muted);}
+.refresh-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;cursor:pointer;font-weight:500;}
+.peak-badge{display:none;background:rgba(245,158,11,.15);border:1px solid var(--warn);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--warn);margin-left:10px;}
+main{padding:24px;max-width:1400px;margin:0 auto;}
+.alert-banner{display:none;background:rgba(239,68,68,.15);border:1px solid var(--danger);border-radius:10px;padding:14px 20px;margin-bottom:20px;font-size:14px;font-weight:600;color:var(--danger);}
+.alert-banner.warn{background:rgba(245,158,11,.12);border-color:var(--warn);color:var(--warn);}
+.alert-banner.show{display:flex;align-items:center;gap:12px;}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.kpi-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.kpi-value{font-size:28px;font-weight:700;line-height:1;}
+.kpi-sub{font-size:12px;color:var(--muted);margin-top:6px;}
+.kpi.accent .kpi-value{color:var(--accent);}
+.kpi.teal .kpi-value{color:var(--accent2);}
+.kpi.warn .kpi-value{color:var(--warn);}
+.kpi.ok .kpi-value{color:var(--ok);}
+.window-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;}
+.window-card h2{font-size:14px;font-weight:600;margin-bottom:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.progress-bar-outer{background:var(--border);border-radius:99px;height:12px;overflow:hidden;margin-bottom:8px;}
+.progress-bar-inner{height:100%;border-radius:99px;}
+.bar-warn{background:linear-gradient(90deg,var(--warn),#f97316);}
+.bar-danger{background:linear-gradient(90deg,var(--danger),#dc2626);}
+.bar-ok{background:linear-gradient(90deg,var(--ok),var(--accent2));}
+.progress-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);}
+.countdown{font-size:32px;font-weight:700;color:var(--accent);margin-top:10px;}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+@media(max-width:900px){.charts-row{grid-template-columns:1fr;}}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.chart-card h2{font-size:14px;font-weight:600;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.chart-wrap{position:relative;height:220px;}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.table-card h2{font-size:14px;font-weight:600;margin-bottom:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;color:var(--muted);font-weight:500;padding:8px 12px;border-bottom:1px solid var(--border);}
+td{padding:10px 12px;border-bottom:1px solid rgba(45,49,72,.5);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(124,110,245,.05);}
+.model-badge{background:var(--border);border-radius:6px;padding:2px 8px;font-size:11px;white-space:nowrap;}
+.model-badge.sonnet{background:rgba(124,110,245,.2);color:var(--accent);}
+.model-badge.haiku{background:rgba(94,234,212,.15);color:var(--accent2);}
+.model-badge.opus{background:rgba(251,191,36,.15);color:var(--warn);}
+.size-bar{display:inline-block;background:var(--accent);height:6px;border-radius:3px;vertical-align:middle;margin-left:8px;opacity:.6;}
+.title-cell{max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.token-num{font-family:monospace;color:var(--accent2);}
+.alert-config{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;}
+.alert-config h2{font-size:14px;font-weight:600;margin-bottom:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.alert-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.alert-row label{font-size:13px;color:var(--text);min-width:160px;}
+.alert-input{background:#111;border:1px solid #333;color:var(--text);border-radius:8px;padding:7px 12px;font-size:13px;width:280px;}
+.btn-save{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-test{background:#2d3148;color:#ccc;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;}
+.save-status{font-size:12px;color:var(--ok);display:none;}
+footer{text-align:center;padding:24px;color:var(--muted);font-size:12px;}
 </style>
 </head>
 <body>
 <header>
-  <h1>⚡ Claude <span>Session Dashboard</span></h1>
+  <h1>&#x26A1; Claude <span class="accent-text">Session Dashboard</span><span class="peak-badge" id="peakBadge">&#x1F525; PEAK HOURS</span></h1>
   <div style="display:flex;align-items:center;gap:16px">
-    <span class="gen-time">Generated: 2026-04-03 — regenerate with python3 claude-dashboard-generator.py</span>
-    <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
+    <span class="gen-time">Generated: 2026-04-03 06:06 &middot; <a href="/manual-tracker.html" style="color:var(--muted)">Manual Tracker</a></span>
+    <button class="refresh-btn" onclick="location.reload()">&#x21BB; Refresh</button>
   </div>
 </header>
 <main>
+  <div class="alert-banner" id="alertBanner"></div>
   <div class="kpi-row">
-    <div class="kpi accent"><div class="kpi-label">Today's Sessions</div><div class="kpi-value">1</div><div class="kpi-sub">2026-04-03</div></div>
-    <div class="kpi teal"><div class="kpi-label">Today's Est. Tokens</div><div class="kpi-value">145K</div><div class="kpi-sub">~3.5 bytes/token estimate</div></div>
-    <div class="kpi warn"><div class="kpi-label">5-Hr Window Used</div><div class="kpi-value">73%</div><div class="kpi-sub">145K of 200K budget</div></div>
-    <div class="kpi ok"><div class="kpi-label">All-Time Sessions</div><div class="kpi-value">143</div><div class="kpi-sub">404K avg tokens/session</div></div>
+    <div class="kpi accent"><div class="kpi-label">Today's Sessions</div><div class="kpi-value">2</div><div class="kpi-sub">2026-04-03</div></div>
+    <div class="kpi teal"><div class="kpi-label">Today's Est. Tokens</div><div class="kpi-value">170K</div><div class="kpi-sub">~3.5 bytes/token estimate</div></div>
+    <div class="kpi warn"><div class="kpi-label">5-Hr Window Used</div><div class="kpi-value">69%</div><div class="kpi-sub">138K of 200K budget</div></div>
+    <div class="kpi ok"><div class="kpi-label">All-Time Sessions</div><div class="kpi-value">144</div><div class="kpi-sub">402K avg tokens/session</div></div>
   </div>
   <div class="window-card">
-    <h2>⏱ Active 5-Hour Window — Rolling Reset</h2>
-    <div class="progress-bar-outer"><div class="progress-bar-inner bar-warn" style="width:73%"></div></div>
-    <div class="progress-labels"><span>0</span><span style="color:#f59e0b">145K tokens used (73%)</span><span>~200K budget</span></div>
+    <h2>&#x23F1; Active 5-Hour Window &mdash; Rolling Reset</h2>
+    <div class="progress-bar-outer"><div class="progress-bar-inner bar-warn" style="width:69%"></div></div>
+    <div class="progress-labels"><span>0</span><span style="color:#f59e0b">138K tokens used (69%)</span><span>~200K budget</span></div>
     <div style="margin-top:14px;font-size:13px;color:var(--muted)">
-      ℹ️ Claude Pro resets every 5 hours from first message in window. Budget is an estimate — actual limits vary.
+      Rolling 5-hr window &mdash; each message expires 5h after sent. Weekday peak hours (5am&ndash;11am PT) consume budget faster.
       <div class="countdown" id="countdown"></div>
     </div>
   </div>
   <div class="charts-row">
-    <div class="chart-card"><h2>📅 Sessions Per Day (14 days)</h2><div class="chart-wrap"><canvas id="dailyChart"></canvas></div></div>
-    <div class="chart-card"><h2>🕐 Today's Token Usage by Hour</h2><div class="chart-wrap"><canvas id="hourlyChart"></canvas></div></div>
+    <div class="chart-card"><h2>&#x1F4C5; Sessions Per Day (14 days)</h2><div class="chart-wrap"><canvas id="dailyChart"></canvas></div></div>
+    <div class="chart-card"><h2>&#x1F550; Today's Token Usage by Hour</h2><div class="chart-wrap"><canvas id="hourlyChart"></canvas></div></div>
   </div>
   <div class="table-card">
-    <h2>🗂 Recent Sessions</h2>
-    <table>
-      <thead><tr><th>Time</th><th>Title</th><th>Model</th><th>Size</th><th>Est. Tokens</th></tr></thead>
-      <tbody>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-03 03:41</td><td class="title-cell">Analyze Claude session files and token usage</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">497.3KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">145K</td></tr>
+    <h2>&#x1F5C2; Recent Sessions</h2>
+    <table><thead><tr><th>Time</th><th>Title</th><th>Model</th><th>Size</th><th>Est. Tokens</th></tr></thead>
+    <tbody>
+<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-03 06:02</td><td class="title-cell">Build Claude token tracker dashboard &amp; Vercel deploy</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">85.5KB<span class="size-bar" style="width:10px"></span></td><td class="token-num">25K</td></tr>
+<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-03 01:02</td><td class="title-cell">Analyze Claude session files and token usage</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">497.3KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">145K</td></tr>
 <tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-02 23:52</td><td class="title-cell">GitHub stars review and token tracking tool</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">497.1KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">145K</td></tr>
 <tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-02 18:58</td><td class="title-cell">Update growth strategy with branding</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">498.4KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">146K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-02 16:05</td><td class="title-cell">Apr 2 – Close recap</td><td><span class="model-badge haiku">Haiku</span></td><td style="white-space:nowrap">498.8KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">146K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-02 14:12</td><td class="title-cell">Apr 2 – Noon check</td><td><span class="model-badge haiku">Haiku</span></td><td style="white-space:nowrap">498.7KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">146K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-02 07:46</td><td class="title-cell">Apr 2 – Morning briefing</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">445.3KB<span class="size-bar" style="width:53px"></span></td><td class="token-num">130K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-02 05:09</td><td class="title-cell">Apr 2 – One time review claude finance</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">496.0KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">145K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-01 23:52</td><td class="title-cell">Create and compare five design color themes</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">499.3KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">146K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-01 22:49</td><td class="title-cell">Organize Amenah Picnics Toronto files and accounts</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">498.4KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">146K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-01 19:58</td><td class="title-cell">Fix git lock, push updates, verify Vercel env vars</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">497.4KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">146K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-01 18:55</td><td class="title-cell">Review trading logs and optimize API connectors</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">497.3KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">146K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-01 16:05</td><td class="title-cell">Apr 1 – Close recap</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">445.8KB<span class="size-bar" style="width:54px"></span></td><td class="token-num">130K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-01 15:04</td><td class="title-cell">Curate UX/branding inspiration from AI creators</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">499.8KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">146K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-01 14:12</td><td class="title-cell">Apr 1 – Noon check</td><td><span class="model-badge haiku">Haiku</span></td><td style="white-space:nowrap">444.5KB<span class="size-bar" style="width:53px"></span></td><td class="token-num">130K</td></tr>
-<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-01 12:52</td><td class="title-cell">Update dashboards and build Make workflows</td><td><span class="model-badge sonnet">Sonnet</span></td><td style="white-space:nowrap">444.4KB<span class="size-bar" style="width:53px"></span></td><td class="token-num">130K</td></tr>
-      </tbody>
-    </table>
+<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">04-02 16:05</td><td class="title-cell">Apr 2 - Close recap</td><td><span class="model-badge haiku">Haiku</span></td><td style="white-space:nowrap">498.8KB<span class="size-bar" style="width:60px"></span></td><td class="token-num">146K</td></tr>
+    </tbody></table>
+  </div>
+  <div class="alert-config">
+    <h2>&#x1F514; Usage Alerts &mdash; Telegram / Discord</h2>
+    <div class="alert-row"><label>Telegram Bot Token</label><input class="alert-input" id="tgToken" placeholder="123456789:ABCdef..." /></div>
+    <div class="alert-row"><label>Telegram Chat ID</label><input class="alert-input" id="tgChatId" placeholder="-100123456789" style="width:180px"/></div>
+    <div class="alert-row"><label>Discord Webhook URL</label><input class="alert-input" id="discordWebhook" placeholder="https://discord.com/api/webhooks/..."/></div>
+    <div class="alert-row">
+      <label>Alert at % window used</label>
+      <input class="alert-input" id="alertPct" type="number" value="85" style="width:70px"/>
+      <button class="btn-save" onclick="saveAlertConfig()">Save</button>
+      <button class="btn-test" onclick="testAlert()">Test Alert</button>
+      <span class="save-status" id="saveStatus">&#x2713; Saved</span>
+    </div>
   </div>
 </main>
-<footer>Claude Session Dashboard — auto-generated from local session files · Run <code>python3 claude-dashboard-generator.py</code> to refresh</footer>
+<footer>Claude Session Dashboard &middot; auto-generated &middot; run <code>python3 claude-dashboard-generator.py</code> to refresh</footer>
 <script>
-const DATA = {"generatedAt":"2026-04-03 04:06:25","today":"2026-04-03","todaySessionCount":1,"todayTokens":145490,"totalSessions":143,"totalTokens":57709787,"avgTokensPerSession":403565,"windowTokens":145490,"windowBudget":200000,"windowPct":73,"dailyLabels":["03-21","03-22","03-23","03-24","03-25","03-26","03-27","03-28","03-29","03-30","03-31","04-01","04-02","04-03"],"dailySessions":[13,5,4,11,11,15,10,9,6,13,13,16,6,1],"dailyTokensK":[451,751,713,3813,5985,9098,6214,4986,3653,8603,8336,3851,859,145],"hourlyTokensK":[0,0,0,145,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"recentSessions":[{"id":"e45a5231-0f0d-4192-8076-95381779dd41","title":"Analyze Claude session files and token usage","createdAt":"2026-04-03T03:41:12.106000","lastActivityAt":"2026-04-03T04:04:19.512000","model":"claude-sonnet-4-6","sizeBytes":509214,"sizeKB":497.3,"estimatedTokens":145490,"hour":"03"}]};
-function updateCountdown() {
-  const recent = DATA.recentSessions;
-  if (!recent.length) return;
-  const lastSessionTime = new Date(recent[0].createdAt).getTime();
-  const windowEnd = lastSessionTime + (5 * 60 * 60 * 1000);
-  const now = Date.now();
-  const diff = windowEnd - now;
-  const el = document.getElementById('countdown');
-  if (diff <= 0) { el.textContent = '✅ Window reset — new 5-hour window available'; el.style.color = 'var(--ok)'; return; }
-  const h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
-  el.textContent = `Next reset in: ${h}h ${m}m ${s}s`;
+const DATA = {"generatedAt":"2026-04-03 06:06:20","today":"2026-04-03","todaySessionCount":2,"todayTokens":170000,"totalSessions":144,"totalTokens":57879787,"avgTokensPerSession":401942,"windowTokens":138000,"windowBudget":200000,"windowPct":69,"windowStartISO":"2026-04-03T01:02:00","dailyLabels":["03-21","03-22","03-23","03-24","03-25","03-26","03-27","03-28","03-29","03-30","03-31","04-01","04-02","04-03"],"dailySessions":[13,5,4,11,11,15,10,9,6,13,13,16,6,2],"dailyTokensK":[451,751,713,3813,5985,9098,6214,4986,3653,8603,8336,3851,859,170],"hourlyTokensK":[0,145,0,0,0,0,25,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"recentSessions":[{"id":"curr","title":"Build Claude token tracker dashboard & Vercel deploy","createdAt":"2026-04-03T06:02:00","model":"claude-sonnet-4-6","sizeKB":85.5,"estimatedTokens":25000,"hour":"06"},{"id":"e45a","title":"Analyze Claude session files and token usage","createdAt":"2026-04-03T01:02:00","model":"claude-sonnet-4-6","sizeKB":497.3,"estimatedTokens":145490,"hour":"01"}],"modelCounts":{"claude-sonnet-4-6":28,"claude-haiku-4-5":2}};
+
+function loadAlertConfig(){
+  try{
+    var c=JSON.parse(localStorage.getItem('claudeAlerts')||'{}');
+    if(c.tgToken)document.getElementById('tgToken').value=c.tgToken;
+    if(c.tgChatId)document.getElementById('tgChatId').value=c.tgChatId;
+    if(c.discordWebhook)document.getElementById('discordWebhook').value=c.discordWebhook;
+    if(c.alertPct)document.getElementById('alertPct').value=c.alertPct;
+    return c;
+  }catch(e){return{};}
 }
-updateCountdown(); setInterval(updateCountdown, 1000);
-new Chart(document.getElementById('dailyChart'), {type:'bar',data:{labels:DATA.dailyLabels,datasets:[{label:'Sessions',data:DATA.dailySessions,backgroundColor:'rgba(124,110,245,0.7)',borderRadius:6},{label:'Tokens (K)',data:DATA.dailyTokensK,backgroundColor:'rgba(94,234,212,0.4)',borderRadius:6,yAxisID:'y2'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2d3148'}},y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2d3148'},title:{display:true,text:'Sessions',color:'#64748b',font:{size:10}}},y2:{position:'right',ticks:{color:'#5eead4',font:{size:10}},grid:{display:false},title:{display:true,text:'Tokens K',color:'#5eead4',font:{size:10}}}}}});
-const hourLabels = Array.from({length:24},(_,i)=>i===0?'12a':i<12?`${i}a`:i===12?'12p':`${i-12}p`);
-new Chart(document.getElementById('hourlyChart'), {type:'bar',data:{labels:hourLabels,datasets:[{label:'Tokens (K)',data:DATA.hourlyTokensK,backgroundColor:DATA.hourlyTokensK.map((v,i)=>{const now=new Date().getHours();return i===now?'rgba(245,158,11,0.8)':'rgba(124,110,245,0.5)';}),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#64748b',font:{size:9},maxRotation:0},grid:{color:'#2d3148'}},y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2d3148'}}}}});
+
+function saveAlertConfig(){
+  var c={tgToken:document.getElementById('tgToken').value.trim(),tgChatId:document.getElementById('tgChatId').value.trim(),discordWebhook:document.getElementById('discordWebhook').value.trim(),alertPct:parseInt(document.getElementById('alertPct').value)||85};
+  localStorage.setItem('claudeAlerts',JSON.stringify(c));
+  var s=document.getElementById('saveStatus');s.style.display='inline';setTimeout(function(){s.style.display='none';},2000);
+}
+
+function sendTelegram(token,chatId,msg){
+  if(!token||!chatId)return;
+  fetch('https://api.telegram.org/bot'+token+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:chatId,text:msg,parse_mode:'HTML'})}).catch(function(e){console.warn('TG',e);});
+}
+
+function sendDiscord(url,msg){
+  if(!url)return;
+  fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:msg})}).catch(function(e){console.warn('Discord',e);});
+}
+
+function fireAlert(msg,level){
+  level=level||'danger';
+  if('Notification'in window&&Notification.permission==='granted')new Notification('Claude Usage Alert',{body:msg});
+  var b=document.getElementById('alertBanner');
+  b.textContent='Warning: '+msg;
+  b.className='alert-banner show'+(level==='warn'?' warn':'');
+  var c=JSON.parse(localStorage.getItem('claudeAlerts')||'{}');
+  var full='Claude Usage Alert\n'+msg+'\nDashboard: https://claude-token-tracker.vercel.app';
+  if(c.tgToken&&c.tgChatId)sendTelegram(c.tgToken,c.tgChatId,full);
+  if(c.discordWebhook)sendDiscord(c.discordWebhook,full);
+}
+
+function testAlert(){fireAlert('Test alert — window: '+DATA.windowPct+'% used. Check countdown for reset time.','warn');}
+
+function updateCountdown(){
+  var ws=DATA.windowStartISO?new Date(DATA.windowStartISO).getTime():null;
+  var el=document.getElementById('countdown');
+  if(!ws){el.textContent='No active session data';return;}
+  var windowEnd=ws+(5*60*60*1000);
+  var now=Date.now();
+  var diff=windowEnd-now;
+  if(diff<=0){el.textContent='Window reset - new 5-hour window available';el.style.color='var(--ok)';return;}
+  var h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+  var resetTime=new Date(windowEnd).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+  el.textContent='Next reset in: '+h+'h '+m+'m '+s+'s  (at '+resetTime+')';
+  var cfg=JSON.parse(localStorage.getItem('claudeAlerts')||'{}');
+  var thr=cfg.alertPct||85;
+  if(DATA.windowPct>=thr&&!window._alertFired){window._alertFired=true;fireAlert(DATA.windowPct+'% of 5-hr budget used! Reset at '+resetTime+'. Pause heavy tasks.');}
+  if(diff<30*60*1000&&DATA.windowPct>50&&!window._schedWarnFired){window._schedWarnFired=true;fireAlert('Window expires in '+h+'h '+m+'m. Scheduled tasks may fail - delay until '+resetTime+'.','warn');}
+}
+updateCountdown();setInterval(updateCountdown,1000);
+
+function checkPeakHours(){
+  var utcHour=new Date().getUTCHours();
+  var ptHour=(utcHour-7+24)%24;
+  var badge=document.getElementById('peakBadge');
+  var dayOfWeek=new Date().getDay();
+  var isWeekday=dayOfWeek>=1&&dayOfWeek<=5;
+  if(isWeekday&&ptHour>=5&&ptHour<11){
+    badge.style.display='inline-block';
+    badge.title='Peak hours 5am-11am PT weekdays: session limits hit faster. Use Gemini/Perplexity for lighter tasks.';
+  }
+}
+checkPeakHours();
+
+if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+loadAlertConfig();
+
+new Chart(document.getElementById('dailyChart'),{type:'bar',data:{labels:DATA.dailyLabels,datasets:[{label:'Sessions',data:DATA.dailySessions,backgroundColor:'rgba(124,110,245,0.7)',borderRadius:6},{label:'Tokens (K)',data:DATA.dailyTokensK,backgroundColor:'rgba(94,234,212,0.4)',borderRadius:6,yAxisID:'y2'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2d3148'}},y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2d3148'},title:{display:true,text:'Sessions',color:'#64748b',font:{size:10}}},y2:{position:'right',ticks:{color:'#5eead4',font:{size:10}},grid:{display:false},title:{display:true,text:'Tokens K',color:'#5eead4',font:{size:10}}}}}});
+
+var hourLabels=[];for(var i=0;i<24;i++){hourLabels.push(i===0?'12a':i<12?(i+'a'):i===12?'12p':((i-12)+'p'));}
+new Chart(document.getElementById('hourlyChart'),{type:'bar',data:{labels:hourLabels,datasets:[{label:'Tokens (K)',data:DATA.hourlyTokensK,backgroundColor:DATA.hourlyTokensK.map(function(v,i){var now=new Date().getHours();return i===now?'rgba(245,158,11,0.8)':'rgba(124,110,245,0.5)';}),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#64748b',font:{size:9},maxRotation:0},grid:{color:'#2d3148'}},y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2d3148'}}}}});
 </script>
 </body>
 </html>
