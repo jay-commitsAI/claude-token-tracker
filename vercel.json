@@ -1,8 +1,7 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/", "destination": "/claude-dashboard.html" },
     { "source": "/dashboard", "destination": "/claude-dashboard.html" },
-    { "source": "/tracker", "destination": "/index.html" }
+    { "source": "/tracker", "destination": "/manual-tracker.html" }
   ]
 }
