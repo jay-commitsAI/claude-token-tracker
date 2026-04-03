@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "routes": [
-    { "src": "/", "dest": "/claude-dashboard.html" },
-    { "src": "/dashboard", "dest": "/claude-dashboard.html" },
-    { "src": "/tracker", "dest": "/index.html" },
-    { "src": "/claude-dashboard.html", "dest": "/claude-dashboard.html" },
-    { "src": "/index.html", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/", "destination": "/claude-dashboard.html" },
+    { "source": "/dashboard", "destination": "/claude-dashboard.html" },
+    { "source": "/tracker", "destination": "/index.html" }
   ]
 }
