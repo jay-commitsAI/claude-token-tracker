@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Token & Usage Tracker</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0d0d0d;
+    color: #e8e8e8;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 4px; }
+  .subtitle { color: #666; font-size: 13px; margin-bottom: 28px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; }
+  .card.highlight { border-color: #7c3aed; }
+  .card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #666; margin-bottom: 8px; }
+  .card-value { font-size: 32px; font-weight: 700; line-height: 1; }
+  .card-sub { font-size: 12px; color: #555; margin-top: 6px; }
+  .card-value.purple { color: #a78bfa; }
+  .card-value.green { color: #4ade80; }
+  .card-value.orange { color: #fb923c; }
+  .timer-display { font-size: 52px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -2px; color: #a78bfa; }
+  .timer-display.warning { color: #fb923c; }
+  .timer-display.expired { color: #f87171; }
+  .progress-wrap { margin-top: 12px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: #555; margin-bottom: 6px; }
+  .progress-bar { height: 8px; background: #2a2a2a; border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #7c3aed, #a78bfa); transition: width 0.5s ease; }
+  .progress-fill.warning { background: linear-gradient(90deg, #b45309, #fb923c); }
+  .progress-fill.danger { background: linear-gradient(90deg, #991b1b, #f87171); }
+  .log-area { background: #111; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px; max-height: 220px; overflow-y: auto; font-family: 'SF Mono', monospace; font-size: 12px; line-height: 1.7; }
+  .log-entry { display: flex; gap: 12px; }
+  .log-time { color: #444; min-width: 80px; }
+  .log-tokens { color: #a78bfa; min-width: 80px; }
+  .log-note { color: #888; }
+  .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  button { padding: 10px 18px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+  button:hover { opacity: 0.85; }
+  .btn-primary { background: #7c3aed; color: #fff; }
+  .btn-secondary { background: #2a2a2a; color: #ccc; }
+  .btn-danger { background: #991b1b; color: #fff; }
+  .btn-green { background: #15803d; color: #fff; }
+  input { background: #111; border: 1px solid #333; color: #e8e8e8; border-radius: 8px; padding: 9px 14px; font-size: 13px; width: 140px; }
+  input:focus { outline: none; border-color: #7c3aed; }
+  .notif { display: none; position: fixed; top: 20px; right: 20px; background: #7c3aed; color: #fff; padding: 14px 20px; border-radius: 12px; font-weight: 600; font-size: 14px; box-shadow: 0 8px 32px rgba(124,58,237,0.4); z-index: 999; max-width: 320px; animation: slideIn 0.3s ease; }
+  .notif.visible { display: block; }
+  .notif.warning { background: #b45309; box-shadow: 0 8px 32px rgba(180,83,9,0.4); }
+  .notif.danger { background: #991b1b; box-shadow: 0 8px 32px rgba(153,27,27,0.4); }
+  @keyframes slideIn { from { transform: translateX(60px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .section-title { font-size: 13px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.6px; margin: 24px 0 12px; }
+  .explainer { background: #111; border: 1px solid #2a2a2a; border-radius: 12px; padding: 18px; font-size: 13px; line-height: 1.7; color: #999; margin-top: 20px; }
+  .explainer strong { color: #ccc; }
+  .explainer ul { padding-left: 20px; margin-top: 8px; }
+  .explainer li { margin-bottom: 4px; }
+  .rate-chart { height: 60px; position: relative; margin-top: 12px; }
+  .rate-bar-wrap { display: flex; align-items: flex-end; gap: 3px; height: 100%; }
+  .rate-bar { flex: 1; background: #7c3aed44; border-radius: 3px 3px 0 0; min-height: 2px; transition: height 0.3s; }
+</style>
+</head>
+<body>
+<h1>⚡ Claude Token & Usage Tracker (Manual)</h1>
+<p class="subtitle">Track your Claude usage, 5-hour reset window, and consumption rate — all in one place. <a href="/claude-dashboard.html" style="color:#a78bfa">→ Switch to Auto Dashboard</a></p>
+<div class="notif" id="notifBanner"></div>
+<div class="grid">
+  <div class="card highlight">
+    <div class="card-label">5-Hour Reset Window</div>
+    <div class="timer-display" id="timerDisplay">5:00:00</div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Window start</span><span id="windowEnd">—</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="timerFill" style="width:0%"></div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="startTimer()">▶ Start / Reset Timer</button>
+      <button class="btn-secondary" onclick="pauseTimer()">⏸ Pause</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">Tokens Used This Window</div>
+    <div class="card-value purple" id="tokensUsed">0</div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Usage</span><span id="tokenPct">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="tokenFill" style="width:0%"></div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+      <input type="number" id="tokenInput" placeholder="Add tokens..." min="0" />
+      <button class="btn-primary" onclick="addTokens()">+ Log</button>
+      <button class="btn-secondary" onclick="setManual()">Set</button>
+    </div>
+  </div>
+</div>
+<div class="grid-3">
+  <div class="card">
+    <div class="card-label">Estimated Budget</div>
+    <div class="card-value green" id="budgetDisplay">—</div>
+    <div class="card-sub">tokens / 5hr window</div>
+    <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+      <input type="number" id="budgetInput" placeholder="e.g. 200000" />
+      <button class="btn-green" onclick="setBudget()">Set</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">Tokens Remaining</div>
+    <div class="card-value orange" id="tokensLeft">—</div>
+    <div class="card-sub">until reset</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Burn Rate</div>
+    <div class="card-value" id="burnRate" style="color:#60a5fa">—</div>
+    <div class="card-sub">tokens / minute avg</div>
+  </div>
+</div>
+<div class="section-title">Alert Thresholds</div>
+<div class="grid-3">
+  <div class="card">
+    <div class="card-label">Warning at</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+      <input type="number" id="warnPct" value="70" style="width:70px" /> <span style="color:#666;font-size:13px">% used</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">Critical at</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+      <input type="number" id="critPct" value="90" style="width:70px" /> <span style="color:#666;font-size:13px">% used</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">Timer warning at</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+      <input type="number" id="timerWarn" value="30" style="width:70px" /> <span style="color:#666;font-size:13px">min left</span>
+    </div>
+  </div>
+</div>
+<div class="section-title">Hourly Burn Rate (last 5 periods)</div>
+<div class="card">
+  <div class="rate-chart">
+    <div class="rate-bar-wrap" id="rateChart">
+      <div class="rate-bar" style="height:0%" title="Period 1"></div>
+      <div class="rate-bar" style="height:0%" title="Period 2"></div>
+      <div class="rate-bar" style="height:0%" title="Period 3"></div>
+      <div class="rate-bar" style="height:0%" title="Period 4"></div>
+      <div class="rate-bar" style="height:0%" title="Current"></div>
+    </div>
+  </div>
+  <div class="card-sub" style="margin-top:8px">Each bar = 1 hour segment. Taller = more tokens burned.</div>
+</div>
+<div class="section-title">Session Log</div>
+<div class="log-area" id="logArea">
+  <div class="log-entry"><span class="log-time">—</span><span class="log-tokens">—</span><span class="log-note">No entries yet. Start a timer and log tokens to begin.</span></div>
+</div>
+<div class="btn-row">
+  <button class="btn-secondary" onclick="clearLog()">🗑 Clear Log</button>
+  <button class="btn-secondary" onclick="exportLog()">↓ Export CSV</button>
+  <button class="btn-danger" onclick="resetAll()">↺ Full Reset</button>
+</div>
+<div class="explainer">
+  <strong>How Claude's 5-Hour Usage Window Works</strong>
+  <ul>
+    <li><strong>Rolling 5-hour window:</strong> Claude Pro/Team counts your usage over a rolling 5-hour period, not a fixed daily reset.</li>
+    <li><strong>Token budget varies by plan:</strong> Pro users get roughly 88k–200k tokens per 5 hrs depending on model.</li>
+    <li><strong>Cowork mode uses Sonnet 4.6</strong> — generally more efficient than Opus but context-heavy tasks burn fast.</li>
+    <li><strong>What eats tokens fast:</strong> Large file reads, screenshots, multi-step tasks, long conversation history.</li>
+    <li><strong>30% left ≈ take it easy:</strong> Stick to focused tasks — no broad file scans or large context loads.</li>
+    <li><strong>Reset strategy:</strong> Start a new conversation to shed old context.</li>
+  </ul>
+</div>
+<script>
+let timerInterval = null;
+let timerSeconds = 5 * 60 * 60;
+let timerRunning = false;
+let windowStartTime = null;
+let tokensUsed = 0;
+let budget = 0;
+let logEntries = [];
+let hourlyBuckets = [0, 0, 0, 0, 0];
+let tokenHistory = [];
+let lastWarnFired = false;
+let lastCritFired = false;
+let lastTimerWarnFired = false;
+
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem('claudeTracker') || '{}');
+    if (s.tokensUsed !== undefined) tokensUsed = s.tokensUsed;
+    if (s.budget) budget = s.budget;
+    if (s.logEntries) logEntries = s.logEntries;
+    if (s.hourlyBuckets) hourlyBuckets = s.hourlyBuckets;
+    if (s.tokenHistory) tokenHistory = s.tokenHistory;
+    if (s.timerSeconds !== undefined) timerSeconds = s.timerSeconds;
+    if (s.windowStartTime) {
+      windowStartTime = new Date(s.windowStartTime);
+      const elapsed = Math.floor((Date.now() - windowStartTime) / 1000);
+      timerSeconds = Math.max(0, 5 * 3600 - elapsed);
+    }
+    if (s.budget) document.getElementById('budgetInput').value = s.budget;
+    renderLog();
+    updateDisplay();
+  } catch(e) {}
+}
+
+function save() {
+  localStorage.setItem('claudeTracker', JSON.stringify({
+    tokensUsed, budget, logEntries, hourlyBuckets, tokenHistory,
+    timerSeconds, windowStartTime: windowStartTime ? windowStartTime.toISOString() : null
+  }));
+}
+
+function startTimer() {
+  if (timerRunning) { clearInterval(timerInterval); timerRunning = false; }
+  timerSeconds = 5 * 60 * 60;
+  windowStartTime = new Date();
+  lastWarnFired = false; lastCritFired = false; lastTimerWarnFired = false;
+  tokensUsed = 0; hourlyBuckets = [0, 0, 0, 0, 0]; tokenHistory = [];
+  addLog('reset', '0', '5-hour window started / reset');
+  timerRunning = true;
+  timerInterval = setInterval(tick, 1000);
+  updateDisplay(); save();
+}
+
+function pauseTimer() {
+  if (!timerRunning) { if (timerSeconds > 0) { timerRunning = true; timerInterval = setInterval(tick, 1000); } }
+  else { clearInterval(timerInterval); timerRunning = false; }
+  updateDisplay();
+}
+
+function tick() {
+  if (timerSeconds > 0) {
+    timerSeconds--;
+    checkAlerts(); updateDisplay();
+    if (timerSeconds % 30 === 0) save();
+  } else {
+    clearInterval(timerInterval); timerRunning = false;
+    showNotif('⏰ 5-Hour window has RESET! You can resume full usage.', 'info');
+    addLog('reset', tokensUsed.toLocaleString(), 'Window expired — usage reset');
+    save();
+  }
+}
+
+function addTokens() {
+  const val = parseInt(document.getElementById('tokenInput').value);
+  if (!val || val <= 0) return;
+  tokensUsed += val;
+  document.getElementById('tokenInput').value = '';
+  logTokenEvent(val); updateBuckets(val); checkAlerts(); updateDisplay(); save();
+}
+
+function setManual() {
+  const val = parseInt(document.getElementById('tokenInput').value);
+  if (isNaN(val) || val < 0) return;
+  const delta = val - tokensUsed; tokensUsed = val;
+  document.getElementById('tokenInput').value = '';
+  if (delta !== 0) { logTokenEvent(delta, 'manual set'); updateBuckets(Math.max(0, delta)); }
+  checkAlerts(); updateDisplay(); save();
+}
+
+function setBudget() {
+  const val = parseInt(document.getElementById('budgetInput').value);
+  if (!val || val <= 0) return;
+  budget = val; updateDisplay(); save();
+}
+
+function updateBuckets(tokens) {
+  if (!windowStartTime) return;
+  const elapsed = Math.floor((Date.now() - windowStartTime) / 1000);
+  const idx = Math.min(4, Math.floor(elapsed / 3600));
+  hourlyBuckets[idx] = (hourlyBuckets[idx] || 0) + tokens;
+  tokenHistory.push({ time: Date.now(), tokens: tokensUsed });
+}
+
+function logTokenEvent(delta, note) {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', {hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  const entry = { type: 'token', time: timeStr, tokens: tokensUsed, delta, note: note || `+${delta.toLocaleString()} tokens` };
+  logEntries.unshift(entry);
+  if (logEntries.length > 200) logEntries.pop();
+  renderLog();
+}
+
+function addLog(type, tokens, note) {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', {hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  logEntries.unshift({ type, time: timeStr, tokens, note });
+  if (logEntries.length > 200) logEntries.pop();
+  renderLog();
+}
+
+function renderLog() {
+  const el = document.getElementById('logArea');
+  if (!logEntries.length) { el.innerHTML = '<div class="log-entry"><span class="log-time">—</span><span class="log-tokens">—</span><span class="log-note">No entries yet.</span></div>'; return; }
+  el.innerHTML = logEntries.slice(0, 60).map(e => `<div class="log-entry ${e.type}"><span class="log-time">${e.time}</span><span class="log-tokens">${typeof e.tokens === 'number' ? e.tokens.toLocaleString() : e.tokens}</span><span class="log-note">${e.note}</span></div>`).join('');
+}
+
+function updateDisplay() {
+  const h = Math.floor(timerSeconds / 3600);
+  const m = Math.floor((timerSeconds % 3600) / 60);
+  const s = timerSeconds % 60;
+  const timerStr = `${String(h).padStart(1,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const timerEl = document.getElementById('timerDisplay');
+  timerEl.textContent = timerStr;
+  const totalSecs = 5 * 3600;
+  const elapsed = totalSecs - timerSeconds;
+  const pct = (elapsed / totalSecs) * 100;
+  const fill = document.getElementById('timerFill');
+  fill.style.width = pct + '%';
+  fill.className = 'progress-fill' + (timerSeconds < 30*60 ? ' danger' : timerSeconds < 60*60 ? ' warning' : '');
+  timerEl.className = 'timer-display' + (timerSeconds < 30*60 ? ' expired' : timerSeconds < 60*60 ? ' warning' : '');
+  if (windowStartTime) {
+    const endTime = new Date(windowStartTime.getTime() + 5*3600*1000);
+    document.getElementById('windowEnd').textContent = endTime.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+  }
+  document.getElementById('tokensUsed').textContent = tokensUsed.toLocaleString();
+  const tokenPct = budget > 0 ? Math.min(100, (tokensUsed / budget) * 100) : 0;
+  const tokenFill = document.getElementById('tokenFill');
+  tokenFill.style.width = tokenPct + '%';
+  tokenFill.className = 'progress-fill' + (tokenPct >= 90 ? ' danger' : tokenPct >= 70 ? ' warning' : '');
+  document.getElementById('tokenPct').textContent = budget > 0 ? tokenPct.toFixed(1) + '%' : '—';
+  if (budget > 0) {
+    document.getElementById('budgetDisplay').textContent = budget.toLocaleString();
+    const left = Math.max(0, budget - tokensUsed);
+    document.getElementById('tokensLeft').textContent = left.toLocaleString();
+    document.getElementById('tokensLeft').style.color = left < budget * 0.1 ? '#f87171' : left < budget * 0.3 ? '#fb923c' : '#4ade80';
+  }
+  if (tokenHistory.length >= 2) {
+    const recent = tokenHistory.slice(-10);
+    const oldest = recent[0]; const newest = recent[recent.length - 1];
+    const mins = (newest.time - oldest.time) / 60000;
+    if (mins > 0) document.getElementById('burnRate').textContent = Math.round((newest.tokens - oldest.tokens) / mins).toLocaleString();
+  }
+  const maxBucket = Math.max(...hourlyBuckets, 1);
+  const bars = document.querySelectorAll('.rate-bar');
+  hourlyBuckets.forEach((v, i) => {
+    const pct = Math.max(2, Math.round((v / maxBucket) * 100));
+    bars[i].style.height = pct + '%';
+    bars[i].title = `Hour ${i+1}: ${v.toLocaleString()} tokens`;
+    bars[i].style.background = i === 4 ? '#7c3aed88' : '#7c3aed33';
+  });
+}
+
+function checkAlerts() {
+  if (!budget) return;
+  const pct = (tokensUsed / budget) * 100;
+  const warnT = parseInt(document.getElementById('warnPct').value) || 70;
+  const critT = parseInt(document.getElementById('critPct').value) || 90;
+  const timerWarnMins = parseInt(document.getElementById('timerWarn').value) || 30;
+  if (pct >= critT && !lastCritFired) { showNotif(`🚨 Critical: ${pct.toFixed(0)}% of token budget used`, 'danger'); addLog('warning', tokensUsed, `CRITICAL: ${pct.toFixed(0)}% budget used`); lastCritFired = true; }
+  else if (pct >= warnT && !lastWarnFired) { showNotif(`⚠️ Warning: ${pct.toFixed(0)}% of token budget used`, 'warning'); addLog('warning', tokensUsed, `WARNING: ${pct.toFixed(0)}% budget used`); lastWarnFired = true; }
+  if (timerSeconds <= timerWarnMins * 60 && timerSeconds > 0 && !lastTimerWarnFired) { showNotif(`⏱ ${timerWarnMins} minutes left in your 5-hour window!`, 'warning'); addLog('warning', tokensUsed, `${timerWarnMins}min timer warning fired`); lastTimerWarnFired = true; }
+}
+
+function showNotif(msg, type = 'info') {
+  const el = document.getElementById('notifBanner');
+  el.textContent = msg;
+  el.className = 'notif visible' + (type === 'warning' ? ' warning' : type === 'danger' ? ' danger' : '');
+  if ('Notification' in window && Notification.permission === 'granted') new Notification('Claude Tracker', { body: msg });
+  setTimeout(() => el.className = 'notif', 6000);
+}
+
+function clearLog() { logEntries = []; renderLog(); save(); }
+function exportLog() {
+  const rows = ['Time,Tokens,Note'];
+  [...logEntries].reverse().forEach(e => { rows.push(`"${e.time}","${e.tokens}","${e.note}"`); });
+  const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `claude-usage-${new Date().toISOString().slice(0,10)}.csv`; a.click();
+}
+
+function resetAll() {
+  if (!confirm('Reset everything?')) return;
+  clearInterval(timerInterval); timerRunning = false; timerSeconds = 5 * 3600;
+  windowStartTime = null; tokensUsed = 0; logEntries = []; hourlyBuckets = [0,0,0,0,0];
+  tokenHistory = []; lastWarnFired = lastCritFired = lastTimerWarnFired = false;
+  localStorage.removeItem('claudeTracker');
+  document.getElementById('windowEnd').textContent = '—';
+  document.getElementById('burnRate').textContent = '—';
+  renderLog(); updateDisplay();
+}
+
+if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+load(); updateDisplay();
+</script>
+</body>
+</html>
