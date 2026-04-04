@@ -24,7 +24,6 @@
 
   main { padding: 24px; max-width: 1400px; margin: 0 auto; }
 
-  /* KPI row */
   .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
   .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
   .kpi-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
@@ -35,7 +34,6 @@
   .kpi.warn .kpi-value { color: var(--warn); }
   .kpi.ok .kpi-value { color: var(--ok); }
 
-  /* Window progress */
   .window-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
   .window-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
   .progress-bar-outer { background: var(--border); border-radius: 99px; height: 12px; overflow: hidden; margin-bottom: 8px; }
@@ -46,14 +44,12 @@
   .progress-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
   .countdown { font-size: 32px; font-weight: 700; color: var(--accent); margin-top: 10px; }
 
-  /* Charts */
   .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
   @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
   .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
   .chart-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
   .chart-wrap { position: relative; height: 220px; }
 
-  /* Session table */
   .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
   .table-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -69,18 +65,14 @@
   .title-cell { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .token-num { font-family: monospace; color: var(--accent2); }
 
-  /* Footer */
   footer { text-align: center; padding: 24px; color: var(--muted); font-size: 12px; }
 
-  /* Alert banner */
   .alert-banner { display:none; background: rgba(239,68,68,.15); border: 1px solid var(--danger); border-radius:10px; padding:14px 20px; margin-bottom:20px; font-size:14px; font-weight:600; color:var(--danger); }
   .alert-banner.warn { background: rgba(245,158,11,.12); border-color: var(--warn); color: var(--warn); }
   .alert-banner.show { display:flex; align-items:center; gap:12px; }
 
-  /* Peak hour badge */
   .peak-badge { display:inline-block; background: rgba(245,158,11,.15); border:1px solid var(--warn); border-radius:6px; padding:3px 10px; font-size:11px; font-weight:600; color:var(--warn); margin-left:10px; }
 
-  /* Alert config panel */
   .alert-config { background: var(--card); border: 1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:24px; }
   .alert-config h2 { font-size:14px; font-weight:600; margin-bottom:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
   .alert-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
@@ -98,49 +90,46 @@
 <header>
   <h1>⚡ Claude <span>Session Dashboard</span><span class="peak-badge" id="peakBadge" style="display:none">🔥 PEAK HOURS</span></h1>
   <div style="display:flex;align-items:center;gap:16px">
-    <span class="gen-time" id="genTime">Generated: 2026-04-03 10:59:21</span>
+    <span class="gen-time" id="genTime">Generated: 2026-04-04 14:02:51</span>
     <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
   </div>
 </header>
 
 <main>
 
-  <!-- Alert Banner -->
   <div class="alert-banner" id="alertBanner"></div>
 
-  <!-- KPI Cards -->
   <div class="kpi-row">
     <div class="kpi accent">
       <div class="kpi-label">Today's Sessions</div>
-      <div class="kpi-value" id="todaySessions">6</div>
-      <div class="kpi-sub">2026-04-03</div>
+      <div class="kpi-value" id="todaySessions">7</div>
+      <div class="kpi-sub">2026-04-04</div>
     </div>
     <div class="kpi teal">
       <div class="kpi-label">Today's Est. Tokens</div>
-      <div class="kpi-value" id="todayTokens">878K</div>
+      <div class="kpi-value" id="todayTokens">625K</div>
       <div class="kpi-sub">~3.5 bytes/token estimate</div>
     </div>
     <div class="kpi warn">
       <div class="kpi-label">5-Hr Window Used</div>
-      <div class="kpi-value" id="windowPct">100%</div>
-      <div class="kpi-sub">732K of 200K budget</div>
+      <div class="kpi-value" id="windowPct">73%</div>
+      <div class="kpi-sub">146K of 200K budget</div>
     </div>
     <div class="kpi ok">
       <div class="kpi-label">All-Time Sessions</div>
-      <div class="kpi-value">148</div>
-      <div class="kpi-sub">395K avg tokens/session</div>
+      <div class="kpi-value">157</div>
+      <div class="kpi-sub">378K avg tokens/session</div>
     </div>
   </div>
 
-  <!-- 5-Hour Window Bar -->
   <div class="window-card">
     <h2>⏱ Active 5-Hour Window — Rolling Reset</h2>
     <div class="progress-bar-outer">
-      <div class="progress-bar-inner bar-danger" id="windowBar" style="width: 100%"></div>
+      <div class="progress-bar-inner bar-warn" id="windowBar" style="width: 73%"></div>
     </div>
     <div class="progress-labels">
       <span>0</span>
-      <span style="color:#ef4444">732K tokens used (100%)</span>
+      <span style="color:var(--warn)">146K tokens used (73%)</span>
       <span>~200K budget</span>
     </div>
     <div style="margin-top:14px; font-size:13px; color:var(--muted)">
@@ -149,7 +138,6 @@
     </div>
   </div>
 
-  <!-- Charts -->
   <div class="charts-row">
     <div class="chart-card">
       <h2>📅 Sessions Per Day (14 days)</h2>
@@ -165,7 +153,6 @@
     </div>
   </div>
 
-  <!-- Session Table -->
   <div class="table-card">
     <h2>🗂 Recent Sessions</h2>
     <table>
@@ -179,131 +166,115 @@
         </tr>
       </thead>
       <tbody id="sessionTable">
-        
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 12:05</td>
+          <td class="title-cell">Apr 4 – Claude usage intraday</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">500.0KB<span class="size-bar" style="width:58px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 07:56</td>
+          <td class="title-cell">Apr 4 – Claude window alert</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">499.3KB<span class="size-bar" style="width:58px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:53</td>
+          <td class="title-cell">Apr 4 – Claude usage intraday</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">500.0KB<span class="size-bar" style="width:58px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:53</td>
+          <td class="title-cell">Apr 4 – Claude dashboard refresh</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">499.2KB<span class="size-bar" style="width:58px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:52</td>
+          <td class="title-cell">Apr 4 – Week wrap</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">47.2KB<span class="size-bar" style="width:5px"></span></td>
+          <td class="token-num">13K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:52</td>
+          <td class="title-cell">Apr 4 – Close recap</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">46.8KB<span class="size-bar" style="width:5px"></span></td>
+          <td class="token-num">13K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:52</td>
+          <td class="title-cell">Apr 4 – Noon check</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">46.7KB<span class="size-bar" style="width:5px"></span></td>
+          <td class="token-num">13K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 12:01</td>
+          <td class="title-cell">Apr 3 – Claude usage intraday</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">500.0KB<span class="size-bar" style="width:58px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 11:12</td>
+          <td class="title-cell">Review actions, fix Vercel 404, push dashboard</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">497.4KB<span class="size-bar" style="width:58px"></span></td>
+          <td class="token-num">145K</td>
+        </tr>
         <tr>
           <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 10:57</td>
           <td class="title-cell">Apr 3 – Claude dashboard refresh</td>
           <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">499.2KB<span class="size-bar" style="width:59px"></span></td>
+          <td style="white-space:nowrap">499.2KB<span class="size-bar" style="width:58px"></span></td>
           <td class="token-num">146K</td>
         </tr>
-
         <tr>
           <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 09:01</td>
           <td class="title-cell">Apr 3 – Claude window alert</td>
           <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">499.4KB<span class="size-bar" style="width:59px"></span></td>
+          <td style="white-space:nowrap">499.4KB<span class="size-bar" style="width:58px"></span></td>
           <td class="token-num">146K</td>
         </tr>
-
         <tr>
           <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 07:53</td>
           <td class="title-cell">Apr 3 – Claude usage sync</td>
           <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">504.2KB<span class="size-bar" style="width:60px"></span></td>
-          <td class="token-num">148K</td>
+          <td style="white-space:nowrap">504.2KB<span class="size-bar" style="width:59px"></span></td>
+          <td class="token-num">147K</td>
         </tr>
-
         <tr>
           <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 07:50</td>
           <td class="title-cell">Apr 3 – Morning briefing</td>
           <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">499.8KB<span class="size-bar" style="width:59px"></span></td>
+          <td style="white-space:nowrap">499.8KB<span class="size-bar" style="width:58px"></span></td>
           <td class="token-num">146K</td>
         </tr>
-
         <tr>
           <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 06:10</td>
           <td class="title-cell">Apr 3 – Claude dashboard refresh</td>
           <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">499.3KB<span class="size-bar" style="width:59px"></span></td>
+          <td style="white-space:nowrap">499.3KB<span class="size-bar" style="width:58px"></span></td>
           <td class="token-num">146K</td>
         </tr>
-
         <tr>
           <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 03:41</td>
           <td class="title-cell">Analyze Claude session files and token usage</td>
           <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">497.8KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">146K</td>
-        </tr>
-
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-02 23:52</td>
-          <td class="title-cell">GitHub stars review and token tracking tool</td>
-          <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">497.1KB<span class="size-bar" style="width:59px"></span></td>
+          <td style="white-space:nowrap">497.8KB<span class="size-bar" style="width:58px"></span></td>
           <td class="token-num">145K</td>
-        </tr>
-
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-02 18:58</td>
-          <td class="title-cell">Update growth strategy with branding</td>
-          <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">498.4KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">146K</td>
-        </tr>
-
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-02 16:05</td>
-          <td class="title-cell">Apr 2 – Close recap</td>
-          <td><span class="model-badge haiku">Haiku</span></td>
-          <td style="white-space:nowrap">498.8KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">146K</td>
-        </tr>
-
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-02 14:12</td>
-          <td class="title-cell">Apr 2 – Noon check</td>
-          <td><span class="model-badge haiku">Haiku</span></td>
-          <td style="white-space:nowrap">498.7KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">146K</td>
-        </tr>
-
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-02 07:46</td>
-          <td class="title-cell">Apr 2 – Morning briefing</td>
-          <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">445.3KB<span class="size-bar" style="width:53px"></span></td>
-          <td class="token-num">130K</td>
-        </tr>
-
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-02 05:09</td>
-          <td class="title-cell">Apr 2 – One time review claude finance</td>
-          <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">496.0KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">145K</td>
-        </tr>
-
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-01 23:52</td>
-          <td class="title-cell">Create and compare five design color themes</td>
-          <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">499.3KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">146K</td>
-        </tr>
-
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-01 22:49</td>
-          <td class="title-cell">Organize Amenah Picnics Toronto files and accounts</td>
-          <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">498.4KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">146K</td>
-        </tr>
-
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-01 19:58</td>
-          <td class="title-cell">Fix git lock, push updates, verify Vercel env vars</td>
-          <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">497.4KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">146K</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- Alert Config Panel -->
   <div class="alert-config">
     <h2>🔔 Usage Alerts & Notifications</h2>
     <div class="alert-row">
@@ -330,13 +301,12 @@
 </main>
 
 <footer>
-  Claude Session Dashboard — auto-generated from local session files · Regenerate by running <code>python3 claude-dashboard-generator.py</code>
+  Claude Session Dashboard — auto-generated from local session files · Intraday refresh 2026-04-04 14:02:51
 </footer>
 
 <script>
-const DATA = {"generatedAt": "2026-04-03 10:59:21", "today": "2026-04-03", "todaySessionCount": 6, "todayTokens": 877618, "totalSessions": 148, "totalTokens": 58441915, "avgTokensPerSession": 394878, "windowTokens": 731989, "windowBudget": 200000, "windowPct": 366, "windowStartISO": "2026-04-03T06:10:27.342000", "dailyLabels": ["03-21", "03-22", "03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03"], "dailySessions": [13, 5, 4, 11, 11, 15, 10, 9, 6, 13, 13, 16, 6, 6], "dailyTokensK": [451, 751, 713, 3813, 5985, 9098, 6214, 4986, 3653, 8603, 8336, 3851, 859, 878], "hourlyTokensK": [0, 0, 0, 146, 0, 0, 146, 294, 0, 146, 146, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "recentSessions": [{"id": "ed482f3a-38bb-418b-ac3c-5b2618831892", "title": "Apr 3 \u2013 Claude dashboard refresh", "createdAt": "2026-04-03T10:57:45.329000", "lastActivityAt": "2026-04-03T10:58:51.394000", "model": "claude-sonnet-4-6", "sizeBytes": 511188, "sizeKB": 499.2, "estimatedTokens": 146054, "hour": "10"}, {"id": "78fff03e-6737-4e5a-b0a0-dec1943f784e", "title": "Apr 3 \u2013 Claude window alert", "createdAt": "2026-04-03T09:01:43.576000", "lastActivityAt": "2026-04-03T09:17:55.861000", "model": "claude-sonnet-4-6", "sizeBytes": 511418, "sizeKB": 499.4, "estimatedTokens": 146119, "hour": "09"}, {"id": "042dc141-ddbe-45e2-8c20-78f1c91baa30", "title": "Apr 3 \u2013 Claude usage sync", "createdAt": "2026-04-03T07:53:54.882000", "lastActivityAt": "2026-04-03T08:11:29.923000", "model": "claude-sonnet-4-6", "sizeBytes": 516318, "sizeKB": 504.2, "estimatedTokens": 147519, "hour": "07"}, {"id": "d07d6d44-75eb-4044-995d-babb596b9557", "title": "Apr 3 \u2013 Morning briefing", "createdAt": "2026-04-03T07:50:01.767000", "lastActivityAt": "2026-04-03T07:54:02.228000", "model": "claude-sonnet-4-6", "sizeBytes": 511784, "sizeKB": 499.8, "estimatedTokens": 146224, "hour": "07"}, {"id": "efab2126-835d-4785-9e58-a6181b144a24", "title": "Apr 3 \u2013 Claude dashboard refresh", "createdAt": "2026-04-03T06:10:27.342000", "lastActivityAt": "2026-04-03T10:57:08.558000", "model": "claude-sonnet-4-6", "sizeBytes": 511254, "sizeKB": 499.3, "estimatedTokens": 146073, "hour": "06"}, {"id": "e45a5231-0f0d-4192-8076-95381779dd41", "title": "Analyze Claude session files and token usage", "createdAt": "2026-04-03T03:41:12.106000", "lastActivityAt": "2026-04-03T06:12:04.046000", "model": "claude-sonnet-4-6", "sizeBytes": 509700, "sizeKB": 497.8, "estimatedTokens": 145629, "hour": "03"}, {"id": "2c9d7152-77f0-4222-a757-2082c5783e2e", "title": "GitHub stars review and token tracking tool", "createdAt": "2026-04-02T23:52:02.633000", "lastActivityAt": "2026-04-03T00:04:33.643000", "model": "claude-sonnet-4-6", "sizeBytes": 509049, "sizeKB": 497.1, "estimatedTokens": 145443, "hour": "23"}, {"id": "6fbb830d-d402-4c47-b587-cf727553364b", "title": "Update growth strategy with branding", "createdAt": "2026-04-02T18:58:54.336000", "lastActivityAt": "2026-04-02T19:46:12.627000", "model": "claude-sonnet-4-6", "sizeBytes": 510394, "sizeKB": 498.4, "estimatedTokens": 145827, "hour": "18"}, {"id": "6921a89d-c25a-41a7-9f58-d566eaa95048", "title": "Apr 2 \u2013 Close recap", "createdAt": "2026-04-02T16:05:53.038000", "lastActivityAt": "2026-04-02T16:08:06.231000", "model": "claude-haiku-4-5-20251001", "sizeBytes": 510786, "sizeKB": 498.8, "estimatedTokens": 145939, "hour": "16"}, {"id": "1e623b86-a911-4411-8964-c4fa4b7e7eff", "title": "Apr 2 \u2013 Noon check", "createdAt": "2026-04-02T14:12:02.237000", "lastActivityAt": "2026-04-02T14:16:33.945000", "model": "claude-haiku-4-5-20251001", "sizeBytes": 510694, "sizeKB": 498.7, "estimatedTokens": 145913, "hour": "14"}, {"id": "e3b28de2-840c-47b1-b2e3-b05940a0aae6", "title": "Apr 2 \u2013 Morning briefing", "createdAt": "2026-04-02T07:46:00.097000", "lastActivityAt": "2026-04-02T09:32:10.247000", "model": "claude-sonnet-4-6", "sizeBytes": 456013, "sizeKB": 445.3, "estimatedTokens": 130289, "hour": "07"}, {"id": "4622f947-38d8-4bf1-86d8-4bbb4309798c", "title": "Apr 2 \u2013 One time review claude finance", "createdAt": "2026-04-02T05:09:09.747000", "lastActivityAt": "2026-04-02T12:30:42.423000", "model": "claude-sonnet-4-6", "sizeBytes": 507911, "sizeKB": 496.0, "estimatedTokens": 145117, "hour": "05"}, {"id": "fc536e31-5480-4e4f-abdd-6e270c19e3a3", "title": "Create and compare five design color themes", "createdAt": "2026-04-01T23:52:04.477000", "lastActivityAt": "2026-04-02T00:35:39.705000", "model": "claude-sonnet-4-6", "sizeBytes": 511279, "sizeKB": 499.3, "estimatedTokens": 146080, "hour": "23"}, {"id": "ce9abeda-89c1-4247-8895-cd95f5fe4729", "title": "Organize Amenah Picnics Toronto files and accounts", "createdAt": "2026-04-01T22:49:28.586000", "lastActivityAt": "2026-04-02T01:55:55.219000", "model": "claude-sonnet-4-6", "sizeBytes": 510337, "sizeKB": 498.4, "estimatedTokens": 145811, "hour": "22"}, {"id": "8c87ea49-5e43-411d-92e6-b045ba51aa4f", "title": "Fix git lock, push updates, verify Vercel env vars", "createdAt": "2026-04-01T19:58:23.551000", "lastActivityAt": "2026-04-02T03:18:00.128000", "model": "claude-sonnet-4-6", "sizeBytes": 509386, "sizeKB": 497.4, "estimatedTokens": 145539, "hour": "19"}], "modelCounts": {"claude-haiku-4-5-20251001": 8, "claude-sonnet-4-6": 22}};
+const DATA = {"generatedAt": "2026-04-04 14:02:51", "today": "2026-04-04", "todaySessionCount": 7, "todayTokens": 625897, "totalSessions": 157, "totalTokens": 59359601, "avgTokensPerSession": 378087, "windowTokens": 146276, "windowBudget": 200000, "windowPct": 73, "windowStartISO": "2026-04-04T12:05:17.128000", "dailyLabels": ["03-22", "03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04"], "dailySessions": [5, 4, 11, 11, 15, 10, 9, 6, 13, 13, 16, 6, 8, 7], "dailyTokensK": [751, 713, 3813, 5985, 9098, 6214, 4986, 3653, 8603, 8336, 3851, 859, 1169, 626], "hourlyTokensK": [0, 0, 0, 334, 0, 0, 0, 146, 0, 0, 0, 0, 146, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "recentSessions": [], "modelCounts": {"claude-haiku-4-5-20251001": 76, "claude-sonnet-4-6": 77, "claude-opus-4-6": 4}, "highUsageCount": 4};
 
-// ── Alert Config ──────────────────────────────────────────────────────────────
 function loadAlertConfig() {
   try {
     const cfg = JSON.parse(localStorage.getItem('claudeAlerts') || '{}');
@@ -382,15 +352,12 @@ async function sendDiscordAlert(webhookUrl, msg) {
 }
 
 async function fireAlert(msg, level = 'danger') {
-  // Browser notification
   if ('Notification' in window && Notification.permission === 'granted') {
     new Notification('⚡ Claude Usage Alert', { body: msg });
   }
-  // Show banner
   const banner = document.getElementById('alertBanner');
   banner.textContent = '⚠️ ' + msg;
   banner.className = 'alert-banner show' + (level === 'warn' ? ' warn' : '');
-  // Send to Telegram / Discord
   const cfg = JSON.parse(localStorage.getItem('claudeAlerts') || '{}');
   const fullMsg = `⚡ <b>Claude Usage Alert</b>\n${msg}\nDashboard: https://claude-token-tracker.vercel.app`;
   if (cfg.tgToken && cfg.tgChatId) await sendTelegramAlert(cfg.tgToken, cfg.tgChatId, fullMsg);
@@ -398,7 +365,7 @@ async function fireAlert(msg, level = 'danger') {
 }
 
 async function testAlert() {
-  await fireAlert(`Test alert — current usage: ${DATA.windowPct}% of 5-hr budget. Reset in: see countdown.`, 'warn');
+  await fireAlert(`Test alert — current usage: ${DATA.windowPct}% of 5-hr budget.`, 'warn');
 }
 
 function updateCountdown() {
@@ -440,7 +407,7 @@ function checkPeakHours() {
   const badge = document.getElementById('peakBadge');
   if (isPeak) {
     badge.style.display = 'inline-block';
-    badge.title = 'Peak hours 8am–2pm ET: Claude limits hit 2x faster. Use Gemini/Perplexity for lighter tasks.';
+    badge.title = 'Peak hours 8am–2pm ET: Claude limits hit 2x faster.';
   }
 }
 checkPeakHours();
@@ -453,15 +420,15 @@ loadAlertConfig();
 new Chart(document.getElementById('dailyChart'), {
   type: 'bar',
   data: {
-    labels: DATA.dailyLabels,
+    labels: ["03-22","03-23","03-24","03-25","03-26","03-27","03-28","03-29","03-30","03-31","04-01","04-02","04-03","04-04"],
     datasets: [{
       label: 'Sessions',
-      data: DATA.dailySessions,
+      data: [5,4,11,11,15,10,9,6,13,13,16,6,8,7],
       backgroundColor: 'rgba(124,110,245,0.7)',
       borderRadius: 6,
     }, {
       label: 'Tokens (K)',
-      data: DATA.dailyTokensK,
+      data: [751,713,3813,5985,9098,6214,4986,3653,8603,8336,3851,859,1169,626],
       backgroundColor: 'rgba(94,234,212,0.4)',
       borderRadius: 6,
       yAxisID: 'y2'
@@ -485,8 +452,8 @@ new Chart(document.getElementById('hourlyChart'), {
     labels: hourLabels,
     datasets: [{
       label: 'Tokens (K)',
-      data: DATA.hourlyTokensK,
-      backgroundColor: DATA.hourlyTokensK.map((v, i) => {
+      data: [0,0,0,334,0,0,0,146,0,0,0,0,146,0,0,0,0,0,0,0,0,0,0,0],
+      backgroundColor: [0,0,0,334,0,0,0,146,0,0,0,0,146,0,0,0,0,0,0,0,0,0,0,0].map((v, i) => {
         const now = new Date().getHours();
         return i === now ? 'rgba(245,158,11,0.8)' : 'rgba(124,110,245,0.5)';
       }),
