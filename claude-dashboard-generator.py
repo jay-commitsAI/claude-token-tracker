@@ -10,7 +10,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import defaultdict
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
@@ -71,6 +71,14 @@ def load_sessions(session_dir: Path) -> list:
     return sessions
 
 
+def parse_iso(s: str) -> datetime:
+    """Parse ISO timestamp string to datetime, tolerating microseconds."""
+    try:
+        return datetime.strptime(s[:19], "%Y-%m-%dT%H:%M:%S")
+    except Exception:
+        return datetime.min
+
+
 def build_chart_data(sessions: list, today: str) -> dict:
     by_date = defaultdict(list)
     for s in sessions:
@@ -93,18 +101,27 @@ def build_chart_data(sessions: list, today: str) -> dict:
         h = int(s["hour"]) if s["hour"].isdigit() else 0
         hourly[h] += round(s["estimatedTokens"] / 1000)
 
-    # Current 5-hour window
-    now_hour = datetime.now().hour
-    window_sessions = [s for s in today_list if int(s["hour"]) >= max(0, now_hour - 5)]
-    window_tokens = sum(s["estimatedTokens"] for s in window_sessions)
+    # ── FIXED: rolling 5-hour window anchored to most recent session ──
+    # Counts all sessions within 5 hours BEFORE the most recent one
+    window_start_iso = ""
+    window_tokens = 0
+    if sessions:
+        most_recent = max(sessions, key=lambda s: s["createdAt"])
+        most_recent_dt = parse_iso(most_recent["createdAt"])
+        window_cutoff = most_recent_dt - timedelta(hours=5)
+        window_start_iso = most_recent["createdAt"]
+        window_tokens = sum(
+            s["estimatedTokens"] for s in sessions
+            if parse_iso(s["createdAt"]) >= window_cutoff
+        )
 
     today_tokens = sum(s["estimatedTokens"] for s in today_list)
     total_tokens = sum(s["estimatedTokens"] for s in sessions)
     avg = round(total_tokens / len(sessions)) if sessions else 0
 
-    # Model breakdown
+    # Model breakdown (last 30 sessions)
     model_counts = defaultdict(int)
-    for s in sessions[-30:]:  # last 30 sessions
+    for s in sessions[-30:]:
         model_counts[s["model"]] += 1
 
     return {
@@ -117,7 +134,8 @@ def build_chart_data(sessions: list, today: str) -> dict:
         "avgTokensPerSession": avg,
         "windowTokens": window_tokens,
         "windowBudget": WINDOW_BUDGET,
-        "windowPct": round(window_tokens / WINDOW_BUDGET * 100),
+        "windowPct": round(window_tokens / WINDOW_BUDGET * 100) if WINDOW_BUDGET else 0,
+        "windowStartISO": window_start_iso,
         "dailyLabels": daily_labels,
         "dailySessions": daily_sessions,
         "dailyTokensK": daily_tokens_k,
@@ -185,7 +203,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th { text-align: left; color: var(--muted); font-weight: 500; padding: 8px 12px; border-bottom: 1px solid var(--border); }
   td { padding: 10px 12px; border-bottom: 1px solid rgba(45,49,72,.5); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
+  tr:last-child td { border-bottom: none; } 
   tr:hover td { background: rgba(124,110,245,.05); }
   .model-badge { background: var(--border); border-radius: 6px; padding: 2px 8px; font-size: 11px; white-space: nowrap; }
   .model-badge.sonnet { background: rgba(124,110,245,.2); color: var(--accent); }
@@ -286,13 +304,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 const DATA = DATA_JSON_PLACEHOLDER;
 
 function updateCountdown() {
-  const recent = DATA.recentSessions;
-  if (!recent.length) return;
-  const lastSessionTime = new Date(recent[0].createdAt).getTime();
-  const windowEnd = lastSessionTime + (5 * 60 * 60 * 1000);
+  // windowStartISO = most recent session timestamp; window expires 5h after that
+  const anchor = DATA.windowStartISO ? new Date(DATA.windowStartISO).getTime() : null;
+  const el = document.getElementById('countdown');
+  if (!anchor) { el.textContent = 'No session data'; return; }
+  const windowEnd = anchor + (5 * 60 * 60 * 1000);
   const now = Date.now();
   const diff = windowEnd - now;
-  const el = document.getElementById('countdown');
   if (diff <= 0) {
     el.textContent = '✅ Window reset — new 5-hour window available';
     el.style.color = 'var(--ok)';
@@ -301,7 +319,8 @@ function updateCountdown() {
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
   const s = Math.floor((diff % 60000) / 1000);
-  el.textContent = `Next reset in: ${h}h ${m}m ${s}s`;
+  const resetTime = new Date(windowEnd).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:true});
+  el.textContent = `Next reset in: ${h}h ${m}m ${s}s  (at ${resetTime})`;
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
@@ -399,7 +418,8 @@ def build_html(data: dict) -> str:
         )
 
     sessions_html = "\n".join(rows)
-    window_pct = min(data["windowPct"], 100)
+    window_pct = data["windowPct"]
+    window_pct_css = min(window_pct, 100)
     if window_pct < 60:
         bar_class, color = "bar-ok", "#22c55e"
     elif window_pct < 85:
@@ -413,7 +433,7 @@ def build_html(data: dict) -> str:
     html = html.replace("TODAY_SESSION_COUNT", str(data["todaySessionCount"]))
     html = html.replace("TODAY_TOKENS_K", fmt_tokens(data["todayTokens"]))
     html = html.replace("WINDOW_PCT%", f"{window_pct}%")
-    html = html.replace("WINDOW_PCT_CSS", str(min(window_pct, 100)))
+    html = html.replace("WINDOW_PCT_CSS", str(window_pct_css))
     html = html.replace("WINDOW_TOKENS_K", fmt_tokens(data["windowTokens"]))
     html = html.replace("WINDOW_BUDGET_K", fmt_tokens(data["windowBudget"]))
     html = html.replace("TOTAL_SESSIONS", str(data["totalSessions"]))
@@ -444,4 +464,5 @@ if __name__ == "__main__":
     OUTPUT_FILE.write_text(html, encoding="utf-8")
     print(f"✅ Dashboard written → {OUTPUT_FILE}")
     print(f"   Today: {data['todaySessionCount']} sessions, {fmt_tokens(data['todayTokens'])} tokens")
-    print(f"   5-hr window: {data['windowPct']}% used")
+    print(f"   5-hr window: {data['windowPct']}% used ({fmt_tokens(data['windowTokens'])} of {fmt_tokens(data['windowBudget'])})")
+    print(f"   Window anchor: {data['windowStartISO']}")
