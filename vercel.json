@@ -1,7 +1,17 @@
 {
   "version": 2,
+  "public": true,
   "rewrites": [
     { "source": "/dashboard", "destination": "/claude-dashboard.html" },
-    { "source": "/tracker", "destination": "/manual-tracker.html" }
+    { "source": "/tracker", "destination": "/manual-tracker.html" },
+    { "source": "/", "destination": "/claude-dashboard.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "max-age=60, s-maxage=60" }
+      ]
+    }
   ]
 }
