@@ -1,0 +1,4 @@
+*.py
+.git
+.gitignore
+README.md
