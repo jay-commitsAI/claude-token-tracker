@@ -44,21 +44,53 @@
   .progress-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
   .countdown { font-size: 32px; font-weight: 700; color: var(--accent); margin-top: 10px; }
 
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .chart-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .chart-wrap { position: relative; height: 220px; }
+
+  .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .table-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 500; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid rgba(45,49,72,.5); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(124,110,245,.05); }
+  .model-badge { background: var(--border); border-radius: 6px; padding: 2px 8px; font-size: 11px; white-space: nowrap; }
+  .model-badge.sonnet { background: rgba(124,110,245,.2); color: var(--accent); }
+  .model-badge.haiku { background: rgba(94,234,212,.15); color: var(--accent2); }
+  .model-badge.opus { background: rgba(251,191,36,.15); color: var(--warn); }
+  .size-bar { display: inline-block; background: var(--accent); height: 6px; border-radius: 3px; vertical-align: middle; margin-left: 8px; opacity: .6; }
+  .title-cell { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .token-num { font-family: monospace; color: var(--accent2); }
+
+  footer { text-align: center; padding: 24px; color: var(--muted); font-size: 12px; }
+
   .alert-banner { display:none; background: rgba(239,68,68,.15); border: 1px solid var(--danger); border-radius:10px; padding:14px 20px; margin-bottom:20px; font-size:14px; font-weight:600; color:var(--danger); }
   .alert-banner.warn { background: rgba(245,158,11,.12); border-color: var(--warn); color: var(--warn); }
   .alert-banner.show { display:flex; align-items:center; gap:12px; }
 
   .peak-badge { display:inline-block; background: rgba(245,158,11,.15); border:1px solid var(--warn); border-radius:6px; padding:3px 10px; font-size:11px; font-weight:600; color:var(--warn); margin-left:10px; }
 
-  footer { text-align: center; padding: 24px; color: var(--muted); font-size: 12px; }
+  .alert-config { background: var(--card); border: 1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:24px; }
+  .alert-config h2 { font-size:14px; font-weight:600; margin-bottom:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+  .alert-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
+  .alert-row label { font-size:13px; color:var(--text); min-width:160px; }
+  .alert-input { background:#111; border:1px solid #333; color:var(--text); border-radius:8px; padding:7px 12px; font-size:13px; width:260px; }
+  .alert-input:focus { outline:none; border-color:var(--accent); }
+  .btn-save { background:var(--accent); color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer; }
+  .btn-test { background:#2d3148; color:#ccc; border:none; border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer; }
+  .btn-test:hover, .btn-save:hover { opacity:.85; }
+  .save-status { font-size:12px; color:var(--ok); display:none; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>⚡ Claude <span>Session Dashboard</span></h1>
+  <h1>⚡ Claude <span>Session Dashboard</span><span class="peak-badge" id="peakBadge" style="display:none">🔥 PEAK HOURS</span></h1>
   <div style="display:flex;align-items:center;gap:16px">
-    <span class="gen-time" id="genTime">Refreshed: 2026-04-04 14:08:30 PT</span>
+    <span class="gen-time" id="genTime">Generated: 2026-04-04 22:11:41</span>
     <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
   </div>
 </header>
@@ -75,45 +107,384 @@
     </div>
     <div class="kpi teal">
       <div class="kpi-label">Today's Est. Tokens</div>
-      <div class="kpi-value" id="todayTokens">1.33M</div>
+      <div class="kpi-value" id="todayTokens">1.3M</div>
       <div class="kpi-sub">~3.5 bytes/token estimate</div>
     </div>
     <div class="kpi warn">
       <div class="kpi-label">5-Hr Window Used</div>
-      <div class="kpi-value" id="windowPct">146%</div>
+      <div class="kpi-value" id="windowPct">100%</div>
       <div class="kpi-sub">292K of 200K budget</div>
     </div>
-    <div class="kpi danger">
-      <div class="kpi-label">⚠️ Status</div>
-      <div class="kpi-value" style="color: var(--danger);">PEAK</div>
-      <div class="kpi-sub">Window exceeded — reset pending</div>
+    <div class="kpi ok">
+      <div class="kpi-label">All-Time Sessions</div>
+      <div class="kpi-value">160</div>
+      <div class="kpi-sub">375K avg tokens/session</div>
     </div>
   </div>
 
   <div class="window-card">
     <h2>⏱ Active 5-Hour Window — Rolling Reset</h2>
     <div class="progress-bar-outer">
-      <div class="progress-bar-inner bar-danger" id="windowBar" style="width: 146%"></div>
+      <div class="progress-bar-inner bar-danger" id="windowBar" style="width: 100%"></div>
     </div>
     <div class="progress-labels">
       <span>0</span>
-      <span style="color:var(--danger)">292K tokens used (146% EXCEEDED)</span>
+      <span style="color:#ef4444">292K tokens used (100%)</span>
       <span>~200K budget</span>
     </div>
     <div style="margin-top:14px; font-size:13px; color:var(--muted)">
-      ℹ️ Heavy usage detected. 9 of 10 sessions today exceed 400KB each. Window reset occurs every 5 hours from first message.
+      ℹ️ Claude Pro resets every 5 hours from first message in window. Budget is an estimate — actual limits vary.
       <div class="countdown" id="countdown"></div>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <h2>📅 Sessions Per Day (14 days)</h2>
+      <div class="chart-wrap">
+        <canvas id="dailyChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h2>🕐 Today's Token Usage by Hour</h2>
+      <div class="chart-wrap">
+        <canvas id="hourlyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <h2>🗂 Recent Sessions</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Title</th>
+          <th>Model</th>
+          <th>Size</th>
+          <th>Est. Tokens</th>
+        </tr>
+      </thead>
+      <tbody id="sessionTable">
+        
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 22:09</td>
+          <td class="title-cell">Claude usage intraday</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">499.9KB<span class="size-bar" style="width:59px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 22:09</td>
+          <td class="title-cell">Claude dashboard refresh</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">499.2KB<span class="size-bar" style="width:59px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 16:01</td>
+          <td class="title-cell">Apr 4 – Claude usage intraday</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">500.0KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 12:05</td>
+          <td class="title-cell">Apr 4 – Claude usage intraday</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">500.0KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 07:56</td>
+          <td class="title-cell">Apr 4 – Claude window alert</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">499.3KB<span class="size-bar" style="width:59px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:53</td>
+          <td class="title-cell">Apr 4 – Claude usage intraday</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">500.0KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:53</td>
+          <td class="title-cell">Apr 4 – Claude dashboard refresh</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">499.2KB<span class="size-bar" style="width:59px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:52</td>
+          <td class="title-cell">Apr 4 – Week wrap</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">496.8KB<span class="size-bar" style="width:59px"></span></td>
+          <td class="token-num">145K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:52</td>
+          <td class="title-cell">Apr 4 – Close recap</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">496.5KB<span class="size-bar" style="width:59px"></span></td>
+          <td class="token-num">145K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:52</td>
+          <td class="title-cell">Apr 4 – Noon check</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">46.7KB<span class="size-bar" style="width:6px"></span></td>
+          <td class="token-num">14K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 12:01</td>
+          <td class="title-cell">Apr 3 – Claude usage intraday</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">500.0KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 11:12</td>
+          <td class="title-cell">Review actions, fix Vercel 404, push dashboard</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">497.4KB<span class="size-bar" style="width:59px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 10:57</td>
+          <td class="title-cell">Apr 3 – Claude dashboard refresh</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">499.2KB<span class="size-bar" style="width:59px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 09:01</td>
+          <td class="title-cell">Apr 3 – Claude window alert</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">499.4KB<span class="size-bar" style="width:59px"></span></td>
+          <td class="token-num">146K</td>
+        </tr>
+
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-03 07:53</td>
+          <td class="title-cell">Apr 3 – Claude usage sync</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td style="white-space:nowrap">504.2KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">148K</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert-config">
+    <h2>🔔 Usage Alerts & Notifications</h2>
+    <div class="alert-row">
+      <label>Telegram Bot Token</label>
+      <input class="alert-input" id="tgToken" placeholder="123456789:ABCdef..." />
+    </div>
+    <div class="alert-row">
+      <label>Telegram Chat ID</label>
+      <input class="alert-input" id="tgChatId" placeholder="-100123456789 or @username" style="width:200px" />
+    </div>
+    <div class="alert-row">
+      <label>Discord Webhook URL</label>
+      <input class="alert-input" id="discordWebhook" placeholder="https://discord.com/api/webhooks/..." />
+    </div>
+    <div class="alert-row">
+      <label>Alert at % used</label>
+      <input class="alert-input" id="alertPct" type="number" value="85" style="width:80px" />
+      <button class="btn-save" onclick="saveAlertConfig()">Save</button>
+      <button class="btn-test" onclick="testAlert()">Test Alert</button>
+      <span class="save-status" id="saveStatus">✓ Saved</span>
     </div>
   </div>
 
 </main>
 
 <footer>
-  Claude Intraday Dashboard — updated 2026-04-04 14:08:30 PT
+  Claude Session Dashboard — auto-generated from local session files · Regenerate by running <code>python3 claude-dashboard-generator.py</code>
 </footer>
 
 <script>
-document.getElementById('genTime').textContent = new Date().toLocaleString('en-US', {timeZone: 'America/Los_Angeles', month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit'}) + ' PT';
+const DATA = {"generatedAt": "2026-04-04 22:11:41", "today": "2026-04-04", "todaySessionCount": 10, "todayTokens": 1327595, "totalSessions": 160, "totalTokens": 60061312, "avgTokensPerSession": 375383, "windowTokens": 292314, "windowBudget": 200000, "windowPct": 146, "windowStartISO": "2026-04-04T22:09:39.525000", "dailyLabels": ["03-22", "03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04"], "dailySessions": [5, 4, 11, 11, 15, 10, 9, 6, 13, 13, 16, 6, 8, 10], "dailyTokensK": [751, 713, 3813, 5985, 9098, 6214, 4986, 3653, 8603, 8336, 3851, 859, 1169, 1328], "hourlyTokensK": [0, 0, 0, 596, 0, 0, 0, 146, 0, 0, 0, 0, 146, 0, 0, 0, 146, 0, 0, 0, 0, 0, 292, 0], "recentSessions": [{"id": "6e17815b-3e08-4eeb-b3ac-e6d6e21cc219", "title": "Claude usage intraday", "createdAt": "2026-04-04T22:09:39.531000", "lastActivityAt": "2026-04-04T22:11:32.969000", "model": "claude-haiku-4-5-20251001", "sizeBytes": 511940, "sizeKB": 499.9, "estimatedTokens": 146269, "hour": "22"}, {"id": "3eab4684-3f10-4376-8bc8-fd1c2663fa71", "title": "Claude dashboard refresh", "createdAt": "2026-04-04T22:09:39.525000", "lastActivityAt": "2026-04-04T22:11:20.159000", "model": "claude-haiku-4-5-20251001", "sizeBytes": 511159, "sizeKB": 499.2, "estimatedTokens": 146045, "hour": "22"}, {"id": "a96f9841-3011-497c-b939-f8b65b3a661c", "title": "Apr 4 – Claude usage intraday", "createdAt": "2026-04-04T16:01:35.866000", "lastActivityAt": "2026-04-04T16:06:18.542000", "model": "claude-sonnet-4-6", "sizeBytes": 511981, "sizeKB": 500.0, "estimatedTokens": 146280, "hour": "16"}, {"id": "3c195482-8fac-471a-ab5a-1afd321eaacb", "title": "Apr 4 – Claude usage intraday", "createdAt": "2026-04-04T12:05:17.128000", "lastActivityAt": "2026-04-04T15:20:23.390000", "model": "claude-sonnet-4-6", "sizeBytes": 511966, "sizeKB": 500.0, "estimatedTokens": 146276, "hour": "12"}, {"id": "d65f4e8f-a504-4b9a-8dfc-294af3f64288", "title": "Apr 4 – Claude window alert", "createdAt": "2026-04-04T07:56:13.370000", "lastActivityAt": "2026-04-04T09:00:27.455000", "model": "claude-sonnet-4-6", "sizeBytes": 511301, "sizeKB": 499.3, "estimatedTokens": 146086, "hour": "07"}, {"id": "ac45889f-ecd8-4f96-9a54-94efe41f3470", "title": "Apr 4 – Claude usage intraday", "createdAt": "2026-04-04T03:53:58.236000", "lastActivityAt": "2026-04-04T09:57:29.906000", "model": "claude-sonnet-4-6", "sizeBytes": 512039, "sizeKB": 500.0, "estimatedTokens": 146297, "hour": "03"}, {"id": "4816feae-110f-4688-8533-e01a15852f9f", "title": "Apr 4 – Claude dashboard refresh", "createdAt": "2026-04-04T03:53:21.059000", "lastActivityAt": "2026-04-04T09:23:34.622000", "model": "claude-haiku-4-5-20251001", "sizeBytes": 511231, "sizeKB": 499.2, "estimatedTokens": 146066, "hour": "03"}, {"id": "bbc78431-1956-4e1b-a3d5-79a9266dc6db", "title": "Apr 4 – Week wrap", "createdAt": "2026-04-04T03:52:25.040000", "lastActivityAt": "2026-04-04T03:52:25.040000", "model": "claude-sonnet-4-6", "sizeBytes": 508713, "sizeKB": 496.8, "estimatedTokens": 145347, "hour": "03"}, {"id": "80519a24-493f-4825-9827-21dbb3c8fcb5", "title": "Apr 4 – Close recap", "createdAt": "2026-04-04T03:52:24.259000", "lastActivityAt": "2026-04-04T03:52:24.259000", "model": "claude-haiku-4-5-20251001", "sizeBytes": 508382, "sizeKB": 496.5, "estimatedTokens": 145252, "hour": "03"}, {"id": "7bc2f670-acad-419d-b1c7-8b2884e12bb4", "title": "Apr 4 – Noon check", "createdAt": "2026-04-04T03:52:24.171000", "lastActivityAt": "2026-04-04T03:52:24.195000", "model": "claude-haiku-4-5-20251001", "sizeBytes": 47871, "sizeKB": 46.7, "estimatedTokens": 13677, "hour": "03"}, {"id": "7ef32a0f-364e-408b-b7fa-d04eaa722b72", "title": "Apr 3 – Claude usage intraday", "createdAt": "2026-04-03T12:01:58.649000", "lastActivityAt": "2026-04-03T12:03:41.025000", "model": "claude-sonnet-4-6", "sizeBytes": 511966, "sizeKB": 500.0, "estimatedTokens": 146276, "hour": "12"}, {"id": "2ee2725f-50e1-46f6-8e50-5fa5d127b79e", "title": "Review actions, fix Vercel 404, push dashboard", "createdAt": "2026-04-03T11:12:25.282000", "lastActivityAt": "2026-04-03T11:24:40.220000", "model": "claude-sonnet-4-6", "sizeBytes": 509358, "sizeKB": 497.4, "estimatedTokens": 145531, "hour": "11"}, {"id": "ed482f3a-38bb-418b-ac3c-5b2618831892", "title": "Apr 3 – Claude dashboard refresh", "createdAt": "2026-04-03T10:57:45.329000", "lastActivityAt": "2026-04-03T11:02:41.137000", "model": "claude-sonnet-4-6", "sizeBytes": 511188, "sizeKB": 499.2, "estimatedTokens": 146054, "hour": "10"}, {"id": "78fff03e-6737-4e5a-b0a0-dec1943f784e", "title": "Apr 3 – Claude window alert", "createdAt": "2026-04-03T09:01:43.576000", "lastActivityAt": "2026-04-03T09:17:55.861000", "model": "claude-sonnet-4-6", "sizeBytes": 511398, "sizeKB": 499.4, "estimatedTokens": 146114, "hour": "09"}, {"id": "042dc141-ddbe-45e2-8c20-78f1c91baa30", "title": "Apr 3 – Claude usage sync", "createdAt": "2026-04-03T07:53:54.882000", "lastActivityAt": "2026-04-03T08:11:29.923000", "model": "claude-sonnet-4-6", "sizeBytes": 516318, "sizeKB": 504.2, "estimatedTokens": 147519, "hour": "07"}], "modelCounts": {"claude-sonnet-4-6": 23, "claude-haiku-4-5-20251001": 7}};
+
+function loadAlertConfig() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('claudeAlerts') || '{}');
+    if (cfg.tgToken) document.getElementById('tgToken').value = cfg.tgToken;
+    if (cfg.tgChatId) document.getElementById('tgChatId').value = cfg.tgChatId;
+    if (cfg.discordWebhook) document.getElementById('discordWebhook').value = cfg.discordWebhook;
+    if (cfg.alertPct) document.getElementById('alertPct').value = cfg.alertPct;
+    return cfg;
+  } catch(e) { return {}; }
+}
+
+function saveAlertConfig() {
+  const cfg = {
+    tgToken: document.getElementById('tgToken').value.trim(),
+    tgChatId: document.getElementById('tgChatId').value.trim(),
+    discordWebhook: document.getElementById('discordWebhook').value.trim(),
+    alertPct: parseInt(document.getElementById('alertPct').value) || 85
+  };
+  localStorage.setItem('claudeAlerts', JSON.stringify(cfg));
+  const s = document.getElementById('saveStatus');
+  s.style.display = 'inline';
+  setTimeout(() => s.style.display = 'none', 2000);
+}
+
+async function sendTelegramAlert(token, chatId, msg) {
+  if (!token || !chatId) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: 'HTML' })
+    });
+  } catch(e) { console.warn('Telegram alert failed:', e); }
+}
+
+async function sendDiscordAlert(webhookUrl, msg) {
+  if (!webhookUrl) return;
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ content: msg })
+    });
+  } catch(e) { console.warn('Discord alert failed:', e); }
+}
+
+async function fireAlert(msg, level = 'danger') {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('⚡ Claude Usage Alert', { body: msg });
+  }
+  const banner = document.getElementById('alertBanner');
+  banner.textContent = '⚠️ ' + msg;
+  banner.className = 'alert-banner show' + (level === 'warn' ? ' warn' : '');
+  const cfg = JSON.parse(localStorage.getItem('claudeAlerts') || '{}');
+  const fullMsg = `⚡ <b>Claude Usage Alert</b>\n${msg}\nDashboard: https://claude-token-tracker.vercel.app`;
+  if (cfg.tgToken && cfg.tgChatId) await sendTelegramAlert(cfg.tgToken, cfg.tgChatId, fullMsg);
+  if (cfg.discordWebhook) await sendDiscordAlert(cfg.discordWebhook, `⚡ **Claude Usage Alert**\n${msg}\nDashboard: https://claude-token-tracker.vercel.app`);
+}
+
+async function testAlert() {
+  await fireAlert(`Test alert — current usage: ${DATA.windowPct}% of 5-hr budget. Reset in: see countdown.`, 'warn');
+}
+
+function updateCountdown() {
+  const windowStart = DATA.windowStartISO ? new Date(DATA.windowStartISO).getTime() : null;
+  const el = document.getElementById('countdown');
+  if (!windowStart) { el.textContent = 'No active session data'; return; }
+  const windowEnd = windowStart + (5 * 60 * 60 * 1000);
+  const now = Date.now();
+  const diff = windowEnd - now;
+  if (diff <= 0) {
+    el.textContent = '✅ Window reset — new 5-hour window available';
+    el.style.color = 'var(--ok)';
+    return;
+  }
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  const resetTime = new Date(windowEnd).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:true});
+  el.textContent = `Next reset in: ${h}h ${m}m ${s}s  (at ${resetTime})`;
+
+  const cfg = JSON.parse(localStorage.getItem('claudeAlerts') || '{}');
+  const threshold = cfg.alertPct || 85;
+  if (DATA.windowPct >= threshold && !window._alertFired) {
+    window._alertFired = true;
+    fireAlert(`🚨 ${DATA.windowPct}% of 5-hr budget used! Reset at ${resetTime}. Pause heavy tasks or scheduled jobs until reset.`);
+  }
+  if (diff < 30 * 60 * 1000 && DATA.windowPct > 50 && !window._schedWarnFired) {
+    window._schedWarnFired = true;
+    fireAlert(`⏱ Window expires in ${h}h ${m}m. Scheduled tasks may hit limit — consider delaying until ${resetTime}.`, 'warn');
+  }
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+function checkPeakHours() {
+  const now = new Date();
+  const utcHour = now.getUTCHours();
+  const etHour = (utcHour - 4 + 24) % 24;
+  const isPeak = etHour >= 8 && etHour < 14;
+  const badge = document.getElementById('peakBadge');
+  if (isPeak) {
+    badge.style.display = 'inline-block';
+    badge.title = 'Peak hours 8am–2pm ET: Claude limits hit 2x faster. Use Gemini/Perplexity for lighter tasks.';
+  }
+}
+checkPeakHours();
+
+if ('Notification' in window && Notification.permission === 'default') {
+  Notification.requestPermission();
+}
+loadAlertConfig();
+
+new Chart(document.getElementById('dailyChart'), {
+  type: 'bar',
+  data: {
+    labels: DATA.dailyLabels,
+    datasets: [{
+      label: 'Sessions',
+      data: DATA.dailySessions,
+      backgroundColor: 'rgba(124,110,245,0.7)',
+      borderRadius: 6,
+    }, {
+      label: 'Tokens (K)',
+      data: DATA.dailyTokensK,
+      backgroundColor: 'rgba(94,234,212,0.4)',
+      borderRadius: 6,
+      yAxisID: 'y2'
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#2d3148' } },
+      y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#2d3148' }, title: { display: true, text: 'Sessions', color: '#64748b', font: { size: 10 } } },
+      y2: { position: 'right', ticks: { color: '#5eead4', font: { size: 10 } }, grid: { display: false }, title: { display: true, text: 'Tokens K', color: '#5eead4', font: { size: 10 } } }
+    }
+  }
+});
+
+const hourLabels = Array.from({length:24}, (_,i) => i === 0 ? '12a' : i < 12 ? `${i}a` : i === 12 ? '12p' : `${i-12}p`);
+new Chart(document.getElementById('hourlyChart'), {
+  type: 'bar',
+  data: {
+    labels: hourLabels,
+    datasets: [{
+      label: 'Tokens (K)',
+      data: DATA.hourlyTokensK,
+      backgroundColor: DATA.hourlyTokensK.map((v, i) => {
+        const now = new Date().getHours();
+        return i === now ? 'rgba(245,158,11,0.8)' : 'rgba(124,110,245,0.5)';
+      }),
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: '#64748b', font: { size: 9 }, maxRotation: 0 }, grid: { color: '#2d3148' } },
+      y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#2d3148' } }
+    }
+  }
+});
 </script>
 </body>
 </html>
