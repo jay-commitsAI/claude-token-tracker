@@ -1,12 +1,5 @@
 {
   "name": "claude-token-tracker",
   "version": "1.0.0",
-  "description": "Claude session and token usage tracker dashboard",
-  "private": true,
-  "scripts": {
-    "dev": "python3 -m http.server 3000"
-  },
-  "keywords": ["claude", "token", "usage", "tracking"],
-  "author": "Jayden",
-  "license": "MIT"
+  "private": true
 }
