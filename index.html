@@ -1,11 +1,193 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=/claude-dashboard.html">
-<script>window.location.replace('/claude-dashboard.html');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Session Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117; --card: #1a1d2e; --card2: #1e2235;
+    --accent: #7c6ef5; --accent2: #5eead4;
+    --warn: #f59e0b; --danger: #ef4444; --ok: #22c55e;
+    --text: #e2e8f0; --muted: #64748b; --border: #2d3148;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; }
+  header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+  header h1 span { color: var(--accent); }
+  .gen-time { font-size: 12px; color: var(--muted); }
+  .refresh-btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 7px 16px; font-size: 13px; cursor: pointer; font-weight: 500; transition: opacity .2s; }
+  .refresh-btn:hover { opacity: .85; }
+  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .kpi-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+  .kpi-value { font-size: 28px; font-weight: 700; line-height: 1; }
+  .kpi-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .kpi.accent .kpi-value { color: var(--accent); }
+  .kpi.teal .kpi-value { color: var(--accent2); }
+  .kpi.warn .kpi-value { color: var(--warn); }
+  .kpi.ok .kpi-value { color: var(--ok); }
+  .window-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+  .window-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .progress-bar-outer { background: var(--border); border-radius: 99px; height: 12px; overflow: hidden; margin-bottom: 8px; }
+  .progress-bar-inner { height: 100%; border-radius: 99px; transition: width .5s ease; }
+  .bar-ok { background: linear-gradient(90deg, var(--ok), var(--accent2)); }
+  .bar-warn { background: linear-gradient(90deg, var(--warn), #f97316); }
+  .bar-danger { background: linear-gradient(90deg, var(--danger), #dc2626); }
+  .progress-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+  .countdown { font-size: 32px; font-weight: 700; color: var(--accent); margin-top: 10px; }
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .chart-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .chart-wrap { position: relative; height: 220px; }
+  .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .table-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 500; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid rgba(45,49,72,.5); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(124,110,245,.05); }
+  .model-badge { background: var(--border); border-radius: 6px; padding: 2px 8px; font-size: 11px; white-space: nowrap; }
+  .model-badge.sonnet { background: rgba(124,110,245,.2); color: var(--accent); }
+  .model-badge.haiku { background: rgba(94,234,212,.15); color: var(--accent2); }
+  .token-num { font-family: monospace; color: var(--accent2); }
+  footer { text-align: center; padding: 24px; color: var(--muted); font-size: 12px; }
+  .peak-badge { display:inline-block; background: rgba(245,158,11,.15); border:1px solid var(--warn); border-radius:6px; padding:3px 10px; font-size:11px; font-weight:600; color:var(--warn); margin-left:10px; }
+</style>
 </head>
 <body>
-<p>Redirecting to <a href="/claude-dashboard.html">Claude Usage Dashboard</a>…</p>
+<header>
+  <h1>⚡ Claude <span>Session Dashboard</span><span class="peak-badge" id="peakBadge" style="display:none">🔥 PEAK HOURS</span></h1>
+  <div style="display:flex;align-items:center;gap:16px">
+    <span class="gen-time" id="genTime">Generated: 2026-04-05 03:19:07</span>
+    <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
+  </div>
+</header>
+<main>
+  <div class="kpi-row">
+    <div class="kpi accent">
+      <div class="kpi-label">Today's Sessions</div>
+      <div class="kpi-value">5</div>
+      <div class="kpi-sub">2026-04-05</div>
+    </div>
+    <div class="kpi teal">
+      <div class="kpi-label">Today's Est. Tokens</div>
+      <div class="kpi-value">733.7K</div>
+      <div class="kpi-sub">~3.5 bytes/token estimate</div>
+    </div>
+    <div class="kpi warn">
+      <div class="kpi-label">5-Hr Window Used</div>
+      <div class="kpi-value">147%</div>
+      <div class="kpi-sub">294.5K of 200K budget</div>
+    </div>
+    <div class="kpi ok">
+      <div class="kpi-label">All-Time Sessions</div>
+      <div class="kpi-value">164</div>
+      <div class="kpi-sub">356K avg tokens/session</div>
+    </div>
+  </div>
+  <div class="window-card">
+    <h2>⏱ Active 5-Hour Window — Rolling Reset</h2>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner bar-danger" id="windowBar" style="width: 147%"></div>
+    </div>
+    <div class="progress-labels">
+      <span>0</span>
+      <span style="color:#ef4444">294.5K tokens used (147%)</span>
+      <span>~200K budget</span>
+    </div>
+  </div>
+  <div class="charts-row">
+    <div class="chart-card">
+      <h2>📅 Sessions Per Day (Last 14 Days)</h2>
+      <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h2>🕐 Today's Token Usage by Hour</h2>
+      <div class="chart-wrap"><canvas id="hourlyChart"></canvas></div>
+    </div>
+  </div>
+  <div class="table-card">
+    <h2>🗂 Recent Sessions</h2>
+    <table>
+      <thead>
+        <tr><th>Time</th><th>Title</th><th>Model</th><th>Size</th><th>Est. Tokens</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--muted); font-size:12px">04-05 03:19</td>
+          <td>Claude usage intraday</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td>505.4KB</td>
+          <td class="token-num">144.4K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px">04-05 03:01</td>
+          <td>Clean up chats and reduce bloat</td>
+          <td><span class="model-badge sonnet">Sonnet</span></td>
+          <td>500.9KB</td>
+          <td class="token-num">143.1K</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+<footer>Claude Session Dashboard — Latest data from 2026-04-05 03:19:07 UTC</footer>
+<script>
+const DATA = {"generatedAt": "2026-04-05 03:19:07", "dailyLabels": ["03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05"], "dailySessions": [4, 11, 11, 14, 10, 9, 6, 13, 13, 16, 6, 8, 10, 5], "dailyTokensK": [713.3, 3813.2, 5985.0, 8034.1, 6214.4, 4527.1, 3192.8, 8602.6, 8336.0, 3852.8, 858.5, 1170.8, 1331.6, 733.7], "hourlyTokensK": [0, 0, 0, 294.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
+new Chart(document.getElementById('dailyChart'), {
+  type: 'bar',
+  data: {
+    labels: DATA.dailyLabels,
+    datasets: [{
+      label: 'Sessions',
+      data: DATA.dailySessions,
+      backgroundColor: 'rgba(124,110,245,0.7)',
+      borderRadius: 6
+    }, {
+      label: 'Tokens (K)',
+      data: DATA.dailyTokensK,
+      backgroundColor: 'rgba(94,234,212,0.4)',
+      borderRadius: 6,
+      yAxisID: 'y2'
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
+    scales: {
+      x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#2d3148' } },
+      y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#2d3148' } },
+      y2: { position: 'right', ticks: { color: '#5eead4', font: { size: 10 } }, grid: { display: false } }
+    }
+  }
+});
+new Chart(document.getElementById('hourlyChart'), {
+  type: 'bar',
+  data: {
+    labels: ['12a','1a','2a','3a','4a','5a','6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p','9p','10p','11p'],
+    datasets: [{
+      label: 'Tokens (K)',
+      data: DATA.hourlyTokensK,
+      backgroundColor: 'rgba(124,110,245,0.5)',
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: '#64748b', font: { size: 9 } }, grid: { color: '#2d3148' } },
+      y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#2d3148' } }
+    }
+  }
+});
+</script>
 </body>
 </html>
