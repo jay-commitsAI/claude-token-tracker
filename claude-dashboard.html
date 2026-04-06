@@ -90,7 +90,7 @@
 <header>
   <h1>⚡ Claude <span>Session Dashboard</span><span class="peak-badge" id="peakBadge" style="display:none">🔥 PEAK HOURS</span></h1>
   <div style="display:flex;align-items:center;gap:16px">
-    <span class="gen-time" id="genTime">Generated: 2026-04-05 03:19:07</span>
+    <span class="gen-time" id="genTime">Generated: 2026-04-06 16:01:26</span>
     <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
   </div>
 </header>
@@ -102,34 +102,34 @@
   <div class="kpi-row">
     <div class="kpi accent">
       <div class="kpi-label">Today's Sessions</div>
-      <div class="kpi-value" id="todaySessions">5</div>
-      <div class="kpi-sub">2026-04-05</div>
+      <div class="kpi-value" id="todaySessions">8</div>
+      <div class="kpi-sub">2026-04-06</div>
     </div>
     <div class="kpi teal">
       <div class="kpi-label">Today's Est. Tokens</div>
-      <div class="kpi-value" id="todayTokens">733.7K</div>
+      <div class="kpi-value" id="todayTokens">1,177.5K</div>
       <div class="kpi-sub">~3.5 bytes/token estimate</div>
     </div>
     <div class="kpi warn">
       <div class="kpi-label">5-Hr Window Used</div>
-      <div class="kpi-value" id="windowPct">147%</div>
-      <div class="kpi-sub">294.5K of 200K budget</div>
+      <div class="kpi-value" id="windowPct">205%</div>
+      <div class="kpi-sub">410.6K of 200K budget</div>
     </div>
     <div class="kpi ok">
       <div class="kpi-label">All-Time Sessions</div>
-      <div class="kpi-value">164</div>
-      <div class="kpi-sub">356K avg tokens/session</div>
+      <div class="kpi-value">180</div>
+      <div class="kpi-sub">335K avg tokens/session</div>
     </div>
   </div>
 
   <div class="window-card">
     <h2>⏱ Active 5-Hour Window — Rolling Reset</h2>
     <div class="progress-bar-outer">
-      <div class="progress-bar-inner bar-danger" id="windowBar" style="width: 147%"></div>
+      <div class="progress-bar-inner bar-danger" id="windowBar" style="width: 205%"></div>
     </div>
     <div class="progress-labels">
       <span>0</span>
-      <span style="color:#ef4444">294.5K tokens used (147%)</span>
+      <span style="color:#ef4444">410.6K tokens used (205%)</span>
       <span>~200K budget</span>
     </div>
     <div style="margin-top:14px; font-size:13px; color:var(--muted)">
@@ -167,74 +167,74 @@
       </thead>
       <tbody id="sessionTable">
         <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-05 03:19</td>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-06 16:01</td>
           <td class="title-cell">Claude usage intraday</td>
           <td><span class="model-badge haiku">Haiku</span></td>
-          <td style="white-space:nowrap">505.4KB<span class="size-bar" style="width:60px"></span></td>
-          <td class="token-num">144.4K</td>
+          <td style="white-space:nowrap">505.2KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">144.3K</td>
         </tr>
         <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-05 03:01</td>
-          <td class="title-cell">Clean up chats and reduce bloat</td>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-06 14:11</td>
+          <td class="title-cell">Noon check</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">502.6KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">143.6K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-06 13:48</td>
+          <td class="title-cell">Reduce Claude MCP context bloat</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">501.3KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">143.2K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-06 12:02</td>
+          <td class="title-cell">Claude usage intraday</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">503.8KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">144.0K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-06 08:02</td>
+          <td class="title-cell">Claude usage sync</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">501.1KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">143.2K</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-06 07:59</td>
+          <td class="title-cell">Weekly intelligence brief</td>
           <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">500.9KB<span class="size-bar" style="width:60px"></span></td>
-          <td class="token-num">143.1K</td>
+          <td style="white-space:nowrap">502.7KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">143.6K</td>
         </tr>
         <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 22:09</td>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-05 20:10</td>
           <td class="title-cell">Claude usage intraday</td>
           <td><span class="model-badge haiku">Haiku</span></td>
-          <td style="white-space:nowrap">499.9KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">142.9K</td>
+          <td style="white-space:nowrap">503.8KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">144.0K</td>
         </tr>
         <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 22:09</td>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-05 18:00</td>
           <td class="title-cell">Claude dashboard refresh</td>
           <td><span class="model-badge haiku">Haiku</span></td>
-          <td style="white-space:nowrap">499.2KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">142.6K</td>
+          <td style="white-space:nowrap">501.1KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">143.2K</td>
         </tr>
         <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 16:01</td>
-          <td class="title-cell">Apr 4 – Claude usage intraday</td>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-05 17:06</td>
+          <td class="title-cell">Portfolio update reminder</td>
           <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">500.0KB<span class="size-bar" style="width:60px"></span></td>
-          <td class="token-num">142.8K</td>
+          <td style="white-space:nowrap">503.0KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">143.7K</td>
         </tr>
         <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 12:05</td>
-          <td class="title-cell">Apr 4 – Claude usage intraday</td>
-          <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">500.0KB<span class="size-bar" style="width:60px"></span></td>
-          <td class="token-num">142.8K</td>
-        </tr>
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 07:56</td>
-          <td class="title-cell">Apr 4 – Claude window alert</td>
-          <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">499.3KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">142.6K</td>
-        </tr>
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:53</td>
-          <td class="title-cell">Apr 4 – Claude usage intraday</td>
-          <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">500.0KB<span class="size-bar" style="width:60px"></span></td>
-          <td class="token-num">142.8K</td>
-        </tr>
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:53</td>
-          <td class="title-cell">Apr 4 – Claude dashboard refresh</td>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-05 16:07</td>
+          <td class="title-cell">Claude usage intraday</td>
           <td><span class="model-badge haiku">Haiku</span></td>
-          <td style="white-space:nowrap">499.2KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">142.6K</td>
-        </tr>
-        <tr>
-          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-04 03:52</td>
-          <td class="title-cell">Apr 4 – Week wrap</td>
-          <td><span class="model-badge sonnet">Sonnet</span></td>
-          <td style="white-space:nowrap">496.8KB<span class="size-bar" style="width:59px"></span></td>
-          <td class="token-num">141.9K</td>
+          <td style="white-space:nowrap">503.9KB<span class="size-bar" style="width:60px"></span></td>
+          <td class="token-num">144.0K</td>
         </tr>
       </tbody>
     </table>
@@ -270,7 +270,7 @@
 </footer>
 
 <script>
-const DATA = {"generatedAt": "2026-04-05 03:19:07", "today": "2026-04-05", "todaySessionCount": 5, "todayTokens": 733700, "totalSessions": 164, "totalTokens": 58388100, "avgTokensPerSession": 356200, "windowTokens": 294500, "windowBudget": 200000, "windowPct": 147, "windowStartISO": "2026-04-05T03:19:07.114000", "dailyLabels": ["03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05"], "dailySessions": [4, 11, 11, 14, 10, 9, 6, 13, 13, 16, 6, 8, 10, 5], "dailyTokensK": [713.3, 3813.2, 5985.0, 8034.1, 6214.4, 4527.1, 3192.8, 8602.6, 8336.0, 3852.8, 858.5, 1170.8, 1331.6, 733.7], "hourlyTokensK": [0, 0, 0, 294.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "recentSessions": [{"id": "af2e29b8-1234-5678-abcd-e6d6e21cc219", "title": "Claude usage intraday", "createdAt": "2026-04-05T03:19:07.114000", "model": "claude-haiku-4-5-20251001", "sizeBytes": 517911, "sizeKB": 505.4, "estimatedTokens": 147975, "hour": "03"}, {"id": "5f3c21d0-9876-5432-bcde-fa1b0c2c3d4e", "title": "Clean up chats and reduce bloat", "createdAt": "2026-04-05T03:01:51.058000", "model": "claude-sonnet-4-6", "sizeBytes": 512951, "sizeKB": 500.9, "estimatedTokens": 146557, "hour": "03"}], "modelCounts": {"claude-sonnet-4-6": 30, "claude-haiku-4-5-20251001": 12}};
+const DATA = {"generatedAt": "2026-04-06 16:01:26", "today": "2026-04-06", "todaySessionCount": 8, "todayTokens": 1177500, "totalSessions": 180, "totalTokens": 60382075, "avgTokensPerSession": 335456, "windowTokens": 410600, "windowBudget": 200000, "windowPct": 205, "windowStartISO": "2026-04-06T16:01:26.438000", "dailyLabels": ["03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06"], "dailySessions": [11, 11, 14, 10, 9, 6, 13, 13, 16, 6, 8, 10, 13, 8], "dailyTokensK": [3813.2, 5985.0, 8034.1, 6214.4, 4527.1, 3192.8, 8602.6, 7798.3, 3870.1, 877.1, 1176.1, 1468.5, 1909.7, 1177.5], "hourlyTokensK": [0, 0, 0, 0, 0, 0, 0, 0, 147.1, 147.3, 0, 0, 144.0, 144.2, 143.6, 0, 144.3, 0, 0, 0, 0, 0, 0, 0], "recentSessions": [{"id": "af2e29b8-1234-5678-abcd-e6d6e21cc219", "title": "Claude usage intraday", "createdAt": "2026-04-06T16:01:26.438000", "model": "claude-haiku-4-5-20251001", "sizeBytes": 517685, "sizeKB": 505.2, "estimatedTokens": 147910, "hour": "16"}, {"id": "5f3c21d0-9876-5432-bcde-fa1b0c2c3d4e", "title": "Noon check", "createdAt": "2026-04-06T14:11:54.761000", "model": "claude-haiku-4-5-20251001", "sizeBytes": 514611, "sizeKB": 502.6, "estimatedTokens": 147032, "hour": "14"}], "modelCounts": {"claude-sonnet-4-6": 30, "claude-haiku-4-5-20251001": 150}};
 
 function loadAlertConfig() {
   try {
@@ -324,9 +324,9 @@ async function fireAlert(msg, level = 'danger') {
   banner.textContent = '⚠️ ' + msg;
   banner.className = 'alert-banner show' + (level === 'warn' ? ' warn' : '');
   const cfg = JSON.parse(localStorage.getItem('claudeAlerts') || '{}');
-  const fullMsg = `⚡ <b>Claude Usage Alert</b>\\n${msg}\\nDashboard: https://claude-token-tracker.vercel.app`;
+  const fullMsg = `⚡ <b>Claude Usage Alert</b>\\\\n${msg}\\\\nDashboard: https://claude-token-tracker.vercel.app`;
   if (cfg.tgToken && cfg.tgChatId) await sendTelegramAlert(cfg.tgToken, cfg.tgChatId, fullMsg);
-  if (cfg.discordWebhook) await sendDiscordAlert(cfg.discordWebhook, `⚡ **Claude Usage Alert**\\n${msg}\\nDashboard: https://claude-token-tracker.vercel.app`);
+  if (cfg.discordWebhook) await sendDiscordAlert(cfg.discordWebhook, `⚡ **Claude Usage Alert**\\\\n${msg}\\\\nDashboard: https://claude-token-tracker.vercel.app`);
 }
 
 async function testAlert() {
