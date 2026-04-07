@@ -90,7 +90,7 @@
 <header>
   <h1>⚡ Claude <span>Session Dashboard</span><span class="peak-badge" id="peakBadge" style="display:none">🔥 PEAK HOURS</span></h1>
   <div style="display:flex;align-items:center;gap:16px">
-    <span class="gen-time" id="genTime">Generated: 2026-04-07 16:01:44</span>
+    <span class="gen-time" id="genTime">Generated: 2026-04-07 17:01:44</span>
     <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
   </div>
 </header>
@@ -256,7 +256,7 @@
 </footer>
 
 <script>
-const DATA = {"generatedAt": "2026-04-07 16:01:44", "today": "2026-04-07", "todaySessionCount": 12, "todayTokens": 1346700, "totalSessions": 197, "totalTokens": 60523483, "avgTokensPerSession": 307149, "windowTokens": 520000, "windowBudget": 200000, "windowPct": 260, "windowStartISO": "2026-04-07T11:01:44.000000", "dailyLabels": ["03-25", "03-26", "03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07"], "dailySessions": [11, 14, 10, 9, 6, 13, 13, 16, 6, 8, 10, 13, 13, 12], "dailyTokensK": [5985.0, 8034.1, 5181.0, 4527.1, 3192.8, 8602.6, 7798.3, 3707.4, 836.3, 1118.1, 1410.5, 1806.2, 1636.9, 1346.7], "hourlyTokensK": [0, 0, 0, 0, 0, 0, 0, 103.0, 89.3, 89.2, 103.0, 103.2, 103.9, 0, 0, 103.4, 103.5, 0, 0, 0, 0, 0, 0, 0], "recentSessions": [{"title": "Claude usage intraday", "createdAt": "2026-04-07T16:01:44", "model": "claude-haiku-4-5-20251001", "sizeKB": 358.4, "estimatedTokens": 104832, "hour": "16"}, {"title": "Analyze picnic business competitors and SEO", "createdAt": "2026-04-07T15:24:04", "model": "claude-sonnet-4-6", "sizeKB": 353.5, "estimatedTokens": 103479, "hour": "15"}], "modelCounts": {"claude-sonnet-4-6": 47, "claude-haiku-4-5-20251001": 150}};
+const DATA = {"generatedAt": "2026-04-07 17:01:44", "today": "2026-04-07", "todaySessionCount": 12, "todayTokens": 1346700, "totalSessions": 197, "totalTokens": 60523483, "avgTokensPerSession": 307149, "windowTokens": 520000, "windowBudget": 200000, "windowPct": 260, "windowStartISO": "2026-04-07T11:01:44.000000", "dailyLabels": ["03-25", "03-26", "03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07"], "dailySessions": [11, 14, 10, 9, 6, 13, 13, 16, 6, 8, 10, 13, 13, 12], "dailyTokensK": [5985.0, 8034.1, 5181.0, 4527.1, 3192.8, 8602.6, 7798.3, 3707.4, 836.3, 1118.1, 1410.5, 1806.2, 1636.9, 1346.7], "hourlyTokensK": [0, 0, 0, 0, 0, 0, 0, 103.0, 89.3, 89.2, 103.0, 103.2, 103.9, 0, 0, 103.4, 103.5, 0, 0, 0, 0, 0, 0, 0], "recentSessions": [{"title": "Claude usage intraday", "createdAt": "2026-04-07T16:01:44", "model": "claude-haiku-4-5-20251001", "sizeKB": 358.4, "estimatedTokens": 104832, "hour": "16"}, {"title": "Analyze picnic business competitors and SEO", "createdAt": "2026-04-07T15:24:04", "model": "claude-sonnet-4-6", "sizeKB": 353.5, "estimatedTokens": 103479, "hour": "15"}], "modelCounts": {"claude-sonnet-4-6": 47, "claude-haiku-4-5-20251001": 150}};
 
 function loadAlertConfig() {
   try {
@@ -310,9 +310,9 @@ async function fireAlert(msg, level = 'danger') {
   banner.textContent = '⚠️ ' + msg;
   banner.className = 'alert-banner show' + (level === 'warn' ? ' warn' : '');
   const cfg = JSON.parse(localStorage.getItem('claudeAlerts') || '{}');
-  const fullMsg = `⚡ <b>Claude Usage Alert</b>\n${msg}\nDashboard: https://claude-token-tracker.vercel.app`;
+  const fullMsg = `⚡ <b>Claude Usage Alert</b>\\n${msg}\\nDashboard: https://claude-token-tracker.vercel.app`;
   if (cfg.tgToken && cfg.tgChatId) await sendTelegramAlert(cfg.tgToken, cfg.tgChatId, fullMsg);
-  if (cfg.discordWebhook) await sendDiscordAlert(cfg.discordWebhook, `⚡ **Claude Usage Alert**\n${msg}\nDashboard: https://claude-token-tracker.vercel.app`);
+  if (cfg.discordWebhook) await sendDiscordAlert(cfg.discordWebhook, `⚡ **Claude Usage Alert**\\n${msg}\\nDashboard: https://claude-token-tracker.vercel.app`);
 }
 
 async function testAlert() {
