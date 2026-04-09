@@ -90,7 +90,7 @@
 <header>
   <h1>⚡ Claude <span>Session Dashboard</span><span class="peak-badge" id="peakBadge" style="display:none">🔥 PEAK HOURS</span></h1>
   <div style="display:flex;align-items:center;gap:16px">
-    <span class="gen-time" id="genTime">Generated: 2026-04-09 03:01:44</span>
+    <span class="gen-time" id="genTime">Generated: 2026-04-09 11:18:28</span>
     <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
   </div>
 </header>
@@ -102,34 +102,34 @@
   <div class="kpi-row">
     <div class="kpi accent">
       <div class="kpi-label">Today's Sessions</div>
-      <div class="kpi-value" id="todaySessions">1</div>
+      <div class="kpi-value" id="todaySessions">2</div>
       <div class="kpi-sub">2026-04-09</div>
     </div>
     <div class="kpi teal">
       <div class="kpi-label">Today's Est. Tokens</div>
-      <div class="kpi-value" id="todayTokens">105.3K</div>
+      <div class="kpi-value" id="todayTokens">107.5K</div>
       <div class="kpi-sub">~3.5 bytes/token estimate</div>
     </div>
     <div class="kpi ok">
       <div class="kpi-label">5-Hr Window Used</div>
-      <div class="kpi-value" id="windowPct">53%</div>
-      <div class="kpi-sub">105.3K of 200K budget</div>
+      <div class="kpi-value" id="windowPct">54%</div>
+      <div class="kpi-sub">107.5K of 200K budget</div>
     </div>
     <div class="kpi ok">
       <div class="kpi-label">All-Time Sessions</div>
-      <div class="kpi-value">218</div>
-      <div class="kpi-sub">287K avg tokens/session</div>
+      <div class="kpi-value">219</div>
+      <div class="kpi-sub">285K avg tokens/session</div>
     </div>
   </div>
 
   <div class="window-card">
     <h2>⏱ Active 5-Hour Window — Rolling Reset</h2>
     <div class="progress-bar-outer">
-      <div class="progress-bar-inner bar-ok" id="windowBar" style="width: 53%; display: block;"></div>
+      <div class="progress-bar-inner bar-ok" id="windowBar" style="width: 54%; display: block;"></div>
     </div>
     <div class="progress-labels">
       <span>0</span>
-      <span style="color:#22c55e">105.3K tokens used (53%)</span>
+      <span style="color:#22c55e">107.5K tokens used (54%)</span>
       <span>~200K budget</span>
     </div>
     <div style="margin-top:14px; font-size:13px; color:var(--muted)">
@@ -166,6 +166,13 @@
         </tr>
       </thead>
       <tbody id="sessionTable">
+        <tr>
+          <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-09 11:18</td>
+          <td class="title-cell">claude-usage-intraday</td>
+          <td><span class="model-badge haiku">Haiku</span></td>
+          <td style="white-space:nowrap">7.8KB<span class="size-bar" style="width:2px"></span></td>
+          <td class="token-num">2.3K</td>
+        </tr>
         <tr>
           <td style="color:var(--muted); font-size:12px; white-space:nowrap">04-09 03:01</td>
           <td class="title-cell">Claude usage intraday</td>
@@ -207,7 +214,7 @@
 </footer>
 
 <script>
-const DATA = {"generatedAt": "2026-04-09 03:01:44", "today": "2026-04-09", "todaySessionCount": 1, "todayTokens": 105317, "totalSessions": 218, "totalTokens": 62531797, "avgTokensPerSession": 286931, "windowTokens": 105317, "windowBudget": 200000, "windowPct": 53, "windowStartISO": "2026-04-09T03:01:44.469000", "dailyLabels": ["03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07", "04-08", "04-09"], "dailySessions": [10, 9, 6, 13, 13, 16, 6, 8, 10, 13, 13, 15, 17, 1], "dailyTokensK": [5181.0, 4527.1, 3192.8, 8602.6, 7798.3, 3707.4, 836.3, 1118.1, 1410.5, 1678.1, 1551.6, 1483.4, 1771.3, 105.3], "hourlyTokensK": [105.3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "recentSessions": [{"title": "Claude usage intraday", "createdAt": "2026-04-09T03:01:44", "model": "claude-haiku-4-5-20251001", "sizeKB": 359.8, "estimatedTokens": 105317, "hour": "03"}], "modelCounts": {"claude-sonnet-4-6": 48, "claude-haiku-4-5-20251001": 170}};
+const DATA = {"generatedAt": "2026-04-09 11:18:28", "today": "2026-04-09", "todaySessionCount": 2, "todayTokens": 107500, "totalSessions": 219, "totalTokens": 62539797, "avgTokensPerSession": 285607, "windowTokens": 107500, "windowBudget": 200000, "windowPct": 54, "windowStartISO": "2026-04-09T06:18:28", "dailyLabels": ["03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07", "04-08", "04-09"], "dailySessions": [10, 9, 6, 13, 13, 16, 6, 8, 10, 13, 13, 15, 17, 2], "dailyTokensK": [5181.0, 4527.1, 3192.8, 8602.6, 7798.3, 3707.4, 836.3, 1118.1, 1410.5, 1678.1, 1551.6, 1483.4, 1771.3, 107.5], "hourlyTokensK": [0, 0, 0, 105, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "recentSessions": [{"title": "claude-usage-intraday", "createdAt": "2026-04-09T11:18:28", "model": "claude-haiku-4-5-20251001", "sizeKB": 7.8, "estimatedTokens": 2286, "hour": "11"}, {"title": "Claude usage intraday", "createdAt": "2026-04-09T03:01:44", "model": "claude-haiku-4-5-20251001", "sizeKB": 359.8, "estimatedTokens": 105317, "hour": "03"}], "modelCounts": {"claude-sonnet-4-6": 48, "claude-haiku-4-5-20251001": 171}};
 
 function loadAlertConfig() {
   try {
@@ -261,9 +268,9 @@ async function fireAlert(msg, level = 'danger') {
   banner.textContent = '⚠️ ' + msg;
   banner.className = 'alert-banner show' + (level === 'warn' ? ' warn' : '');
   const cfg = JSON.parse(localStorage.getItem('claudeAlerts') || '{}');
-  const fullMsg = `⚡ <b>Claude Usage Alert</b>\\\\n${msg}\\\\nDashboard: https://claude-token-tracker.vercel.app`;
+  const fullMsg = `⚡ <b>Claude Usage Alert</b>\\n${msg}\\nDashboard: https://claude-token-tracker.vercel.app`;
   if (cfg.tgToken && cfg.tgChatId) await sendTelegramAlert(cfg.tgToken, cfg.tgChatId, fullMsg);
-  if (cfg.discordWebhook) await sendDiscordAlert(cfg.discordWebhook, `⚡ **Claude Usage Alert**\\\\n${msg}\\\\nDashboard: https://claude-token-tracker.vercel.app`);
+  if (cfg.discordWebhook) await sendDiscordAlert(cfg.discordWebhook, `⚡ **Claude Usage Alert**\\n${msg}\\nDashboard: https://claude-token-tracker.vercel.app`);
 }
 
 async function testAlert() {
