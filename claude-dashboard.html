@@ -33,16 +33,17 @@
   .kpi.teal .kpi-value { color: var(--accent2); }
   .kpi.warn .kpi-value { color: var(--warn); }
   .kpi.ok .kpi-value { color: var(--ok); }
+  .kpi.danger .kpi-value { color: var(--danger); }
 
   .window-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
   .window-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
   .progress-bar-outer { background: var(--border); border-radius: 99px; height: 12px; overflow: hidden; margin-bottom: 8px; }
-  .progress-bar-inner { height: 100%; border-radius: 99px; transition: width .5s ease; }
+  .progress-bar-inner { height: 100%; border-radius: 99px; transition: width .5s ease; max-width: 100%; }
   .bar-ok { background: linear-gradient(90deg, var(--ok), var(--accent2)); }
   .bar-warn { background: linear-gradient(90deg, var(--warn), #f97316); }
   .bar-danger { background: linear-gradient(90deg, var(--danger), #dc2626); }
   .progress-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
-  .countdown { font-size: 32px; font-weight: 700; color: var(--accent); margin-top: 10px; }
+  .countdown { font-size: 28px; font-weight: 700; color: var(--accent); margin-top: 10px; }
 
   .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
   @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
@@ -50,7 +51,7 @@
   .chart-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
   .chart-wrap { position: relative; height: 220px; }
 
-  .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
   .table-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th { text-align: left; color: var(--muted); font-weight: 500; padding: 8px 12px; border-bottom: 1px solid var(--border); }
@@ -64,6 +65,28 @@
   .size-bar { display: inline-block; background: var(--accent); height: 6px; border-radius: 3px; vertical-align: middle; margin-left: 8px; opacity: .6; }
   .title-cell { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .token-num { font-family: monospace; color: var(--accent2); }
+
+  /* Schedule Notes Panel */
+  .sched-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+  .sched-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .sched-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .sched-item { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; gap: 14px; align-items: flex-start; }
+  .sched-time { font-size: 18px; font-weight: 700; font-family: monospace; white-space: nowrap; min-width: 56px; }
+  .sched-time.ok { color: var(--ok); }
+  .sched-time.warn { color: var(--warn); }
+  .sched-time.muted { color: var(--muted); }
+  .sched-body { flex: 1; }
+  .sched-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .sched-note { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .sched-badge { display: inline-block; font-size: 10px; font-weight: 600; border-radius: 4px; padding: 1px 7px; margin-bottom: 5px; }
+  .sched-badge.window { background: rgba(94,234,212,.15); color: var(--accent2); border: 1px solid rgba(94,234,212,.3); }
+  .sched-badge.peak { background: rgba(239,68,68,.12); color: var(--danger); border: 1px solid rgba(239,68,68,.25); }
+  .sched-badge.safe { background: rgba(34,197,94,.12); color: var(--ok); border: 1px solid rgba(34,197,94,.25); }
+  .sched-badge.overlap { background: rgba(245,158,11,.12); color: var(--warn); border: 1px solid rgba(245,158,11,.25); }
+  .peak-zone { background: rgba(239,68,68,.06); border: 1px dashed rgba(239,68,68,.3); border-radius: 10px; padding: 10px 16px; margin-bottom: 12px; font-size: 12px; color: var(--muted); }
+  .peak-zone strong { color: var(--danger); }
+  .token-note { background: rgba(124,110,245,.06); border: 1px solid rgba(124,110,245,.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .token-note strong { color: var(--text); }
 
   footer { text-align: center; padding: 24px; color: var(--muted); font-size: 12px; }
 
@@ -101,19 +124,19 @@
 
   <div class="kpi-row">
     <div class="kpi accent">
-      <div class="kpi-label">Today's Sessions</div>
+      <div class="kpi-label">Sessions Today (Calendar)</div>
       <div class="kpi-value" id="todaySessions">4</div>
-      <div class="kpi-sub">2026-04-09</div>
+      <div class="kpi-sub">By calendar date — for trend tracking only</div>
     </div>
     <div class="kpi teal">
-      <div class="kpi-label">Today's Est. Tokens</div>
+      <div class="kpi-label">Calendar Day Tokens (Est.)</div>
       <div class="kpi-value" id="todayTokens">410.7K</div>
-      <div class="kpi-sub">~3.5 bytes/token estimate</div>
+      <div class="kpi-sub">⚠️ Not your limit — see 5-hr window below</div>
     </div>
-    <div class="kpi warn">
-      <div class="kpi-label">5-Hr Window Used</div>
+    <div class="kpi" id="windowKpi">
+      <div class="kpi-label">Active 5-Hr Window Used</div>
       <div class="kpi-value" id="windowPct">103%</div>
-      <div class="kpi-sub">205.9K of 200K budget</div>
+      <div class="kpi-sub" id="windowSub">205.9K of 200K — this is your real limit</div>
     </div>
     <div class="kpi ok">
       <div class="kpi-label">All-Time Sessions</div>
@@ -124,16 +147,19 @@
 
   <div class="window-card">
     <h2>⏱ Active 5-Hour Window — Rolling Reset</h2>
+    <div class="token-note">
+      <strong>Calendar tokens ≠ window limit.</strong> The 5-hr window resets from your <em>first message</em> in that window — not at midnight. A 1 AM session counts against the previous window even though it shows under today's calendar date. The percentage below is what Claude actually throttles against.
+    </div>
     <div class="progress-bar-outer">
-      <div class="progress-bar-inner bar-danger" id="windowBar" style="width: 103%; display: block;"></div>
+      <div class="progress-bar-inner bar-danger" id="windowBar" style="width: 100%; display: block;"></div>
     </div>
     <div class="progress-labels">
       <span>0</span>
-      <span style="color:#ef4444">205.9K tokens used (103%)</span>
+      <span id="windowLabel" style="color:#ef4444">205.9K used (103%) — OVER LIMIT</span>
       <span>~200K budget</span>
     </div>
     <div style="margin-top:14px; font-size:13px; color:var(--muted)">
-      ℹ️ Claude Pro resets every 5 hours from first message in window. Budget is an estimate — actual limits vary.
+      ℹ️ Claude Pro resets every 5 hours from first message. Budget is an estimate — actual limits vary by plan and server load.
       <div class="countdown" id="countdown"></div>
     </div>
   </div>
@@ -158,7 +184,7 @@
     <table>
       <thead>
         <tr>
-          <th>Time</th>
+          <th>Time (ET)</th>
           <th>Title</th>
           <th>Model</th>
           <th>Size</th>
@@ -205,6 +231,67 @@
     </table>
   </div>
 
+  <!-- SCHEDULE NOTES PANEL -->
+  <div class="sched-card">
+    <h2>📋 Window Strategy — Schedule Notes (Testing Apr 2026)</h2>
+    <div class="peak-zone">
+      <strong>🔴 Peak Hours: 8:00 AM – 2:00 PM ET</strong> — Claude throttles 2x faster. Scheduled tasks run outside this window. Intraday tracker avoids this zone except 7:30 AM (fires just before peak starts).
+    </div>
+    <div class="sched-grid">
+      <div class="sched-item">
+        <div class="sched-time ok">2:30a</div>
+        <div class="sched-body">
+          <span class="sched-badge window">WINDOW START</span><span class="sched-badge safe" style="margin-left:4px">OFF-PEAK</span>
+          <div class="sched-name">Intraday Tracker</div>
+          <div class="sched-note">Fires just after sleep (bed ~2 AM). Starts fresh 5-hr window: <strong>2:30 AM → resets 7:30 AM</strong>. Leftover usage from this run may carry into morning — check window% at 7:30 AM.</div>
+        </div>
+      </div>
+      <div class="sched-item">
+        <div class="sched-time ok">7:30a</div>
+        <div class="sched-body">
+          <span class="sched-badge window">WINDOW RESET</span><span class="sched-badge overlap" style="margin-left:4px">PRE-PEAK</span>
+          <div class="sched-name">Intraday Tracker</div>
+          <div class="sched-note">Catches 2:30 AM window reset. Feeds data to 7:48 AM morning briefing. New window: <strong>7:30 AM → resets 12:30 PM</strong>. Fires 18 min before peak — low risk but watch for heavy use.</div>
+        </div>
+      </div>
+      <div class="sched-item">
+        <div class="sched-time warn">12:30p</div>
+        <div class="sched-body">
+          <span class="sched-badge window">WINDOW RESET</span><span class="sched-badge safe" style="margin-left:4px">PEAK ENDING</span>
+          <div class="sched-name">Intraday Tracker ✨ NEW</div>
+          <div class="sched-note">Added Apr 2026 to catch noon gap. The 7:30 AM window resets here — this run captures it cleanly. New window: <strong>12:30 PM → resets 5:30 PM</strong>. Peak officially ends at 2 PM.</div>
+        </div>
+      </div>
+      <div class="sched-item">
+        <div class="sched-time ok">2:30p</div>
+        <div class="sched-body">
+          <span class="sched-badge safe">OFF-PEAK</span>
+          <div class="sched-name">Intraday Tracker</div>
+          <div class="sched-note">Peak is over. Afternoon checkpoint — captures any sessions from peak hours that ran anyway. Window continues from 12:30 PM run or starts fresh if that window expired.</div>
+        </div>
+      </div>
+      <div class="sched-item">
+        <div class="sched-time ok">6:00p</div>
+        <div class="sched-body">
+          <span class="sched-badge safe">OFF-PEAK</span>
+          <div class="sched-name">Dashboard Refresh (timestamp only)</div>
+          <div class="sched-note">Lightweight — 2 GitHub calls. Updates dashboard timestamp to show it's alive even on low-activity days. No session analysis. Keeps Vercel deployment fresh.</div>
+        </div>
+      </div>
+      <div class="sched-item">
+        <div class="sched-time ok">8:00p</div>
+        <div class="sched-body">
+          <span class="sched-badge safe">OFF-PEAK</span>
+          <div class="sched-name">Intraday Tracker</div>
+          <div class="sched-note">Evening checkpoint. Captures afternoon + evening session activity. New window: <strong>8 PM → resets 1 AM</strong> — bridges into overnight before 2:30 AM run. Last push before bed.</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px; padding:10px 14px; background:rgba(124,110,245,.06); border:1px solid rgba(124,110,245,.2); border-radius:8px; font-size:12px; color:var(--muted); line-height:1.6;">
+      <strong style="color:var(--text)">⚠️ Known noon gap (testing):</strong> Between 7:30 AM window exhaustion and the new 12:30 PM run, there's a ~2-hr blind spot (10:30 AM – 12:30 PM) where heavy usage could hit the limit undetected. Monitor for one week to see if 12:30 PM is sufficient or if an 11:00 AM run is needed despite being in peak.
+    </div>
+  </div>
+
   <div class="alert-config">
     <h2>🔔 Usage Alerts & Notifications</h2>
     <div class="alert-row">
@@ -231,7 +318,7 @@
 </main>
 
 <footer>
-  Claude Session Dashboard — auto-generated from local session files · Regenerate by running <code>python3 claude-dashboard-generator.py</code>
+  Claude Session Dashboard — auto-generated from local session files · Schedule: 2:30a / 7:30a / 12:30p / 2:30p / 8:00p ET
 </footer>
 
 <script>
@@ -289,9 +376,9 @@ async function fireAlert(msg, level = 'danger') {
   banner.textContent = '⚠️ ' + msg;
   banner.className = 'alert-banner show' + (level === 'warn' ? ' warn' : '');
   const cfg = JSON.parse(localStorage.getItem('claudeAlerts') || '{}');
-  const fullMsg = `⚡ <b>Claude Usage Alert</b>\\n${msg}\\nDashboard: https://claude-token-tracker.vercel.app`;
+  const fullMsg = `⚡ <b>Claude Usage Alert</b>\n${msg}\nDashboard: https://claude-token-tracker.vercel.app`;
   if (cfg.tgToken && cfg.tgChatId) await sendTelegramAlert(cfg.tgToken, cfg.tgChatId, fullMsg);
-  if (cfg.discordWebhook) await sendDiscordAlert(cfg.discordWebhook, `⚡ **Claude Usage Alert**\\n${msg}\\nDashboard: https://claude-token-tracker.vercel.app`);
+  if (cfg.discordWebhook) await sendDiscordAlert(cfg.discordWebhook, `⚡ **Claude Usage Alert**\n${msg}\nDashboard: https://claude-token-tracker.vercel.app`);
 }
 
 async function testAlert() {
@@ -301,10 +388,22 @@ async function testAlert() {
 function updateCountdown() {
   const windowStart = DATA.windowStartISO ? new Date(DATA.windowStartISO).getTime() : null;
   const el = document.getElementById('countdown');
+  const kpi = document.getElementById('windowKpi');
+  const bar = document.getElementById('windowBar');
+  const lbl = document.getElementById('windowLabel');
   if (!windowStart) { el.textContent = 'No active session data'; return; }
   const windowEnd = windowStart + (5 * 60 * 60 * 1000);
   const now = Date.now();
   const diff = windowEnd - now;
+
+  // Color the window KPI dynamically
+  const pct = DATA.windowPct;
+  kpi.className = 'kpi ' + (pct >= 100 ? 'danger' : pct >= 85 ? 'warn' : pct >= 60 ? 'teal' : 'ok');
+  bar.className = 'progress-bar-inner ' + (pct >= 100 ? 'bar-danger' : pct >= 85 ? 'bar-warn' : 'bar-ok');
+  bar.style.width = Math.min(pct, 100) + '%';
+  lbl.style.color = pct >= 100 ? '#ef4444' : pct >= 85 ? '#f59e0b' : '#22c55e';
+  lbl.textContent = `${Math.round(DATA.windowTokens/1000)}K used (${pct}%)${pct >= 100 ? ' — OVER LIMIT' : pct >= 85 ? ' — HIGH' : ''}`;
+
   if (diff <= 0) {
     el.textContent = '✅ Window reset — new 5-hour window available';
     el.style.color = 'var(--ok)';
@@ -385,15 +484,30 @@ new Chart(document.getElementById('hourlyChart'), {
       label: 'Tokens (K)',
       data: DATA.hourlyTokensK,
       backgroundColor: DATA.hourlyTokensK.map((v, i) => {
+        const etHour = (i - 4 + 24) % 24;
+        const isPeak = etHour >= 8 && etHour < 14;
         const now = new Date().getHours();
-        return i === now ? 'rgba(245,158,11,0.8)' : 'rgba(124,110,245,0.5)';
+        if (i === now) return 'rgba(245,158,11,0.9)';
+        if (isPeak) return 'rgba(239,68,68,0.35)';
+        return 'rgba(124,110,245,0.5)';
       }),
       borderRadius: 4,
     }]
   },
   options: {
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const etHour = (ctx.dataIndex - 4 + 24) % 24;
+            const isPeak = etHour >= 8 && etHour < 14;
+            return `${ctx.parsed.y}K tokens${isPeak ? ' (peak hour)' : ''}`;
+          }
+        }
+      }
+    },
     scales: {
       x: { ticks: { color: '#64748b', font: { size: 9 }, maxRotation: 0 }, grid: { color: '#2d3148' } },
       y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#2d3148' } }
