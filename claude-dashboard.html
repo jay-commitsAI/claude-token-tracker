@@ -113,7 +113,7 @@
 <header>
   <h1>⚡ Claude <span>Session Dashboard</span><span class="peak-badge" id="peakBadge" style="display:none">🔥 PEAK HOURS</span></h1>
   <div style="display:flex;align-items:center;gap:16px">
-    <span class="gen-time" id="genTime">Generated: 2026-04-09 14:31:59</span>
+    <span class="gen-time" id="genTime">Generated: 2026-04-09 16:47:32</span>
     <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
   </div>
 </header>
@@ -322,7 +322,7 @@
 </footer>
 
 <script>
-const DATA = {"generatedAt": "2026-04-09 14:31:59", "today": "2026-04-09", "todaySessionCount": 4, "todayTokens": 410722, "totalSessions": 227, "totalTokens": 63395825, "avgTokensPerSession": 279280, "windowTokens": 205890, "windowBudget": 200000, "windowPct": 103, "windowStartISO": "2026-04-09T09:31:59", "dailyLabels": ["03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07", "04-08", "04-09"], "dailySessions": [10, 9, 6, 13, 13, 16, 6, 8, 10, 13, 13, 15, 17, 4], "dailyTokensK": [5181.0, 4527.1, 3192.8, 8602.6, 7798.3, 3707.4, 836.3, 1118.1, 1410.5, 1678.1, 1551.6, 1481.7, 1760.7, 410.7], "hourlyTokensK": [0, 0, 0, 102.9, 0, 0, 0, 0, 0, 0, 0, 102.0, 0, 0, 103.5, 0, 0, 0, 0, 0, 0, 0, 0, 0], "recentSessions": [{"title": "Claude usage intraday", "createdAt": "2026-04-09T14:31:59", "model": "claude-haiku-4-5-20251001", "sizeKB": 362.4, "estimatedTokens": 103531, "hour": "14"}, {"title": "Noon check", "createdAt": "2026-04-09T14:12:28", "model": "claude-haiku-4-5-20251001", "sizeKB": 358.3, "estimatedTokens": 102359, "hour": "14"}, {"title": "Claude usage intraday", "createdAt": "2026-04-09T11:16:45", "model": "claude-haiku-4-5-20251001", "sizeKB": 357.0, "estimatedTokens": 102007, "hour": "11"}, {"title": "Morning briefing", "createdAt": "2026-04-09T07:45:04", "model": "claude-sonnet-4-6", "sizeKB": 359.9, "estimatedTokens": 102825, "hour": "07"}, {"title": "Claude usage sync", "createdAt": "2026-04-09T07:50:00", "model": "claude-sonnet-4-6", "sizeKB": 360.3, "estimatedTokens": 102931, "hour": "07"}], "modelCounts": {"claude-sonnet-4-6": 48, "claude-haiku-4-5-20251001": 171}};
+const DATA = {"generatedAt": "2026-04-09 16:47:32", "today": "2026-04-09", "todaySessionCount": 4, "todayTokens": 410722, "totalSessions": 227, "totalTokens": 63395825, "avgTokensPerSession": 279280, "windowTokens": 205890, "windowBudget": 200000, "windowPct": 103, "windowStartISO": "2026-04-09T09:31:59", "dailyLabels": ["03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07", "04-08", "04-09"], "dailySessions": [10, 9, 6, 13, 13, 16, 6, 8, 10, 13, 13, 15, 17, 4], "dailyTokensK": [5181.0, 4527.1, 3192.8, 8602.6, 7798.3, 3707.4, 836.3, 1118.1, 1410.5, 1678.1, 1551.6, 1481.7, 1760.7, 410.7], "hourlyTokensK": [0, 0, 0, 102.9, 0, 0, 0, 0, 0, 0, 0, 102.0, 0, 0, 103.5, 0, 0, 0, 0, 0, 0, 0, 0, 0], "recentSessions": [{"title": "Claude usage intraday", "createdAt": "2026-04-09T14:31:59", "model": "claude-haiku-4-5-20251001", "sizeKB": 362.4, "estimatedTokens": 103531, "hour": "14"}, {"title": "Noon check", "createdAt": "2026-04-09T14:12:28", "model": "claude-haiku-4-5-20251001", "sizeKB": 358.3, "estimatedTokens": 102359, "hour": "14"}, {"title": "Claude usage intraday", "createdAt": "2026-04-09T11:16:45", "model": "claude-haiku-4-5-20251001", "sizeKB": 357.0, "estimatedTokens": 102007, "hour": "11"}, {"title": "Morning briefing", "createdAt": "2026-04-09T07:45:04", "model": "claude-sonnet-4-6", "sizeKB": 359.9, "estimatedTokens": 102825, "hour": "07"}, {"title": "Claude usage sync", "createdAt": "2026-04-09T07:50:00", "model": "claude-sonnet-4-6", "sizeKB": 360.3, "estimatedTokens": 102931, "hour": "07"}], "modelCounts": {"claude-sonnet-4-6": 48, "claude-haiku-4-5-20251001": 171}};
 
 function loadAlertConfig() {
   try {
@@ -376,9 +376,9 @@ async function fireAlert(msg, level = 'danger') {
   banner.textContent = '⚠️ ' + msg;
   banner.className = 'alert-banner show' + (level === 'warn' ? ' warn' : '');
   const cfg = JSON.parse(localStorage.getItem('claudeAlerts') || '{}');
-  const fullMsg = `⚡ <b>Claude Usage Alert</b>\n${msg}\nDashboard: https://claude-token-tracker.vercel.app`;
+  const fullMsg = `⚡ <b>Claude Usage Alert</b>\\n${msg}\\nDashboard: https://claude-token-tracker.vercel.app`;
   if (cfg.tgToken && cfg.tgChatId) await sendTelegramAlert(cfg.tgToken, cfg.tgChatId, fullMsg);
-  if (cfg.discordWebhook) await sendDiscordAlert(cfg.discordWebhook, `⚡ **Claude Usage Alert**\n${msg}\nDashboard: https://claude-token-tracker.vercel.app`);
+  if (cfg.discordWebhook) await sendDiscordAlert(cfg.discordWebhook, `⚡ **Claude Usage Alert**\\n${msg}\\nDashboard: https://claude-token-tracker.vercel.app`);
 }
 
 async function testAlert() {
@@ -402,9 +402,7 @@ function updateCountdown() {
   bar.className = 'progress-bar-inner ' + (pct >= 100 ? 'bar-danger' : pct >= 85 ? 'bar-warn' : 'bar-ok');
   bar.style.width = Math.min(pct, 100) + '%';
   lbl.style.color = pct >= 100 ? '#ef4444' : pct >= 85 ? '#f59e0b' : '#22c55e';
-  lbl.textContent = `${Math.round(DATA.windowTokens/1000)}K used (${pct}%)${pct >= 100 ? ' — OVER LIMIT' : pct >= 85 ? ' — HIGH' : ''}`;
-
-  if (diff <= 0) {
+  lbl.textContent = `${Math.round(DATA.windowTokens/1000)}K used (${pct}%)${pct >= 100 ? ' — OVER LIMIT' : pct >= 85 ? ' — HIGH' : ''}`;\n\n  if (diff <= 0) {
     el.textContent = '✅ Window reset — new 5-hour window available';
     el.style.color = 'var(--ok)';
     return;
