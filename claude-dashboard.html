@@ -189,13 +189,13 @@
         </div>
 
         <div class="last-updated">
-            <span id="lastUpdated">Last updated: —</span>
+            <span id="lastUpdated">Last updated: 2026-04-11 12:00:00</span>
         </div>
     </div>
 
     <script>
         const DATA = {
-    "generatedAt": "2026-04-11 02:31",
+    "generatedAt": "2026-04-11 12:00:00",
     "todaySessionCount": 2,
     "todayTokens": 257092,
     "windowTokens": 257092,
@@ -328,7 +328,7 @@
         function updateMetrics() {
             // Today's usage
             document.getElementById('todayTokens').textContent = formatNumber(DATA.todayTokens);
-            document.getElementById('todaySessions').textContent = `${DATA.todaySessionCount} session${DATA.todaySessionCount !== 1 ? 's' : ''}`;
+            document.getElementById('todaySessions').textContent = `${DATA.todaySessionCount} session${DATA.todaySessionCount !== 1 ? 's' : ''}`);
 
             // Window usage
             document.getElementById('windowTokens').textContent = formatNumber(DATA.windowTokens);
