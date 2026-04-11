@@ -195,31 +195,33 @@
 
     <script>
         const DATA = {
-    "generatedAt": "2026-04-11 12:00:00",
-    "todaySessionCount": 2,
-    "todayTokens": 257092,
-    "windowTokens": 257092,
-    "windowPct": 128.5,
-    "windowStartISO": "2026-04-10T21:31:16.069000",
-    "lifetimeTokens": 65048969,
-    "totalSessions": 246,
+    "generatedAt": "2026-04-11T07:31:40",
+    "today": "2026-04-11",
+    "todaySessionCount": 3,
+    "todayTokens": 386624,
+    "totalSessions": 248,
+    "totalTokens": 65306409,
+    "windowTokens": 386624,
+    "windowBudget": 200000,
+    "windowPct": 193.3,
+    "windowStartISO": "2026-04-11T02:31:16.069000",
     "dailyLabels": [
-        "Mar 29",
-        "Mar 30",
-        "Mar 31",
-        "Apr 1",
-        "Apr 2",
-        "Apr 3",
-        "Apr 4",
-        "Apr 5",
-        "Apr 6",
-        "Apr 7",
-        "Apr 8",
-        "Apr 9",
-        "Apr 10",
-        "Apr 11"
+        "03-29",
+        "03-30",
+        "03-31",
+        "04-01",
+        "04-02",
+        "04-03",
+        "04-04",
+        "04-05",
+        "04-06",
+        "04-07",
+        "04-08",
+        "04-09",
+        "04-10",
+        "04-11"
     ],
-    "dailySessionCounts": [
+    "dailySessions": [
         6,
         13,
         13,
@@ -233,7 +235,7 @@
         17,
         15,
         12,
-        2
+        3
     ],
     "dailyTokensK": [
         3192.8,
@@ -249,17 +251,17 @@
         1784.7,
         1484.2,
         1087.5,
-        257.1
+        386.6
     ],
     "hourlyTokensK": [
-        127.9,
+        0,
         0,
         129.2,
         0,
+        128.2,
         0,
         0,
-        0,
-        0,
+        129.2,
         0,
         0,
         0,
@@ -279,6 +281,18 @@
     ],
     "recentSessions": [
         {
+            "timestamp": "2026-04-11T07:31:40.529000",
+            "title": "Claude usage intraday",
+            "model": "claude-haiku-4-5-20251001",
+            "tokensK": 129.245
+        },
+        {
+            "timestamp": "2026-04-11T04:19:49.396000",
+            "title": "Claude dashboard refresh",
+            "model": "claude-haiku-4-5-20251001",
+            "tokensK": 128.195
+        },
+        {
             "timestamp": "2026-04-11T02:31:16.069000",
             "title": "Claude usage intraday",
             "model": "claude-haiku-4-5-20251001",
@@ -295,18 +309,6 @@
             "title": "Design REAL AI logos and social content",
             "model": "claude-sonnet-4-6",
             "tokensK": 127.893
-        },
-        {
-            "timestamp": "2026-04-09T23:08:53.543000",
-            "title": "Audit finance app and integrate social sentiment f",
-            "model": "claude-sonnet-4-6",
-            "tokensK": 102.5
-        },
-        {
-            "timestamp": "2026-04-10T19:54:54.387000",
-            "title": "Audit content and social media files",
-            "model": "claude-sonnet-4-6",
-            "tokensK": 102.567
         }
     ]
 };
@@ -328,12 +330,12 @@
         function updateMetrics() {
             // Today's usage
             document.getElementById('todayTokens').textContent = formatNumber(DATA.todayTokens);
-            document.getElementById('todaySessions').textContent = `${DATA.todaySessionCount} session${DATA.todaySessionCount !== 1 ? 's' : ''}`);
+            document.getElementById('todaySessions').textContent = `${DATA.todaySessionCount} session${DATA.todaySessionCount !== 1 ? 's' : ''}`;
 
             // Window usage
             document.getElementById('windowTokens').textContent = formatNumber(DATA.windowTokens);
             const windowPctElement = document.getElementById('windowPct');
-            windowPctElement.textContent = `${DATA.windowPct}% of 200K budget`;
+            windowPctElement.textContent = `${DATA.windowPct.toFixed(1)}% of ${formatNumber(DATA.windowBudget)} budget`;
             windowPctElement.style.color = DATA.windowPct > 100 ? '#ff4444' : DATA.windowPct > 80 ? '#ff8c00' : '#4eaf0f';
 
             // 14-day total
@@ -341,7 +343,7 @@
             document.getElementById('totalTokens').textContent = formatNumber(total14day);
 
             // Lifetime
-            document.getElementById('lifetimeTokens').textContent = formatNumber(DATA.lifetimeTokens);
+            document.getElementById('lifetimeTokens').textContent = formatNumber(DATA.totalTokens);
             document.getElementById('totalSessions').textContent = `${DATA.totalSessions} sessions`;
 
             // Last updated
@@ -350,7 +352,7 @@
             // Alert
             const alertElement = document.getElementById('alert');
             if (DATA.windowPct > 100) {
-                alertElement.textContent = `⚠️ Window exceeded! ${DATA.windowPct}% of daily budget used.`;
+                alertElement.textContent = `⚠️ Window exceeded! ${DATA.windowPct.toFixed(1)}% of daily budget used.`;
                 alertElement.style.display = 'inline-block';
             } else {
                 alertElement.style.display = 'none';
@@ -373,7 +375,7 @@
                         },
                         {
                             label: 'Sessions',
-                            data: DATA.dailySessionCounts,
+                            data: DATA.dailySessions,
                             backgroundColor: '#0066cc',
                             borderColor: '#0052a3',
                             borderWidth: 1,
