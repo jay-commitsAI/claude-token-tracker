@@ -8,16 +8,27 @@ Output: claude-dashboard.html (open in browser)
 
 import json
 import os
+import platform
 import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 from collections import defaultdict
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
-SESSION_DIR = Path(os.environ.get(
-    "CLAUDE_SESSION_DIR",
-    "/Users/jayden/Library/Application Support/Claude/local-agent-mode-sessions"
-))
+def _default_session_dir() -> Path:
+    """Return the platform-appropriate Claude session directory."""
+    system = platform.system()
+    home = Path.home()
+    if system == "Darwin":
+        return home / "Library/Application Support/Claude/local-agent-mode-sessions"
+    elif system == "Windows":
+        appdata = os.environ.get("APPDATA", str(home / "AppData/Roaming"))
+        return Path(appdata) / "Claude/local-agent-mode-sessions"
+    # Linux and other Unix-like systems
+    return home / ".config/Claude/local-agent-mode-sessions"
+
+_env_dir = os.environ.get("CLAUDE_SESSION_DIR", "")
+SESSION_DIR = Path(_env_dir) if _env_dir else _default_session_dir()
 
 # Find the deepest session folder automatically
 def find_session_dir(base: Path) -> Path:
@@ -92,7 +103,7 @@ def build_chart_data(sessions: list, today: str) -> dict:
         day_s = by_date[d]
         daily_labels.append(d[5:])
         daily_sessions.append(len(day_s))
-        daily_tokens_k.append(round(sum(s["estimatedTokens"] for s in day_s) / 1000))
+        daily_tokens_k.append(round(sum(s["estimatedTokens"] for s in day_s) / 1000, 1))
 
     # Hourly for today
     today_list = by_date.get(today, [])
@@ -221,6 +232,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <header>
   <h1>⚡ Claude <span>Session Dashboard</span></h1>
   <div style="display:flex;align-items:center;gap:16px">
+    <a href="/manual-tracker.html" style="color:var(--muted);font-size:12px;text-decoration:none;white-space:nowrap">→ Manual Tracker</a>
     <span class="gen-time" id="genTime">Generated: GENERATED_AT</span>
     <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
   </div>

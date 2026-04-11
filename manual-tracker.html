@@ -87,8 +87,9 @@
       <div class="progress-label"><span>Usage</span><span id="tokenPct">0%</span></div>
       <div class="progress-bar"><div class="progress-fill" id="tokenFill" style="width:0%"></div></div>
     </div>
-    <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
-      <input type="number" id="tokenInput" placeholder="Add tokens..." min="0" />
+    <div style="display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap">
+      <input type="number" id="tokenInput" placeholder="Tokens..." min="0" style="width:110px"/>
+      <input type="text" id="noteInput" placeholder="Note (optional)" style="flex:1;min-width:100px"/>
       <button class="btn-primary" onclick="addTokens()">+ Log</button>
       <button class="btn-secondary" onclick="setManual()">Set</button>
     </div>
@@ -113,6 +114,7 @@
     <div class="card-label">Burn Rate</div>
     <div class="card-value" id="burnRate" style="color:#60a5fa">—</div>
     <div class="card-sub">tokens / minute avg</div>
+    <div class="card-sub" id="projectedTime" style="margin-top:4px;color:#555"></div>
   </div>
 </div>
 <div class="section-title">Alert Thresholds</div>
@@ -200,6 +202,11 @@ function load() {
     if (s.budget) document.getElementById('budgetInput').value = s.budget;
     renderLog();
     updateDisplay();
+    // Auto-resume timer if window was active when page was closed
+    if (windowStartTime && timerSeconds > 0) {
+      timerRunning = true;
+      timerInterval = setInterval(tick, 1000);
+    }
   } catch(e) {}
 }
 
@@ -244,17 +251,21 @@ function tick() {
 function addTokens() {
   const val = parseInt(document.getElementById('tokenInput').value);
   if (!val || val <= 0) return;
+  const note = document.getElementById('noteInput').value.trim();
   tokensUsed += val;
   document.getElementById('tokenInput').value = '';
-  logTokenEvent(val); updateBuckets(val); checkAlerts(); updateDisplay(); save();
+  document.getElementById('noteInput').value = '';
+  logTokenEvent(val, note || null); updateBuckets(val); checkAlerts(); updateDisplay(); save();
 }
 
 function setManual() {
   const val = parseInt(document.getElementById('tokenInput').value);
   if (isNaN(val) || val < 0) return;
+  const note = document.getElementById('noteInput').value.trim();
   const delta = val - tokensUsed; tokensUsed = val;
   document.getElementById('tokenInput').value = '';
-  if (delta !== 0) { logTokenEvent(delta, 'manual set'); updateBuckets(Math.max(0, delta)); }
+  document.getElementById('noteInput').value = '';
+  if (delta !== 0) { logTokenEvent(delta, note || 'manual set'); updateBuckets(Math.max(0, delta)); }
   checkAlerts(); updateDisplay(); save();
 }
 
@@ -275,7 +286,8 @@ function updateBuckets(tokens) {
 function logTokenEvent(delta, note) {
   const now = new Date();
   const timeStr = now.toLocaleTimeString('en-US', {hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
-  const entry = { type: 'token', time: timeStr, tokens: tokensUsed, delta, note: note || `+${delta.toLocaleString()} tokens` };
+  const baseNote = delta > 0 ? `+${delta.toLocaleString()} tokens` : `${delta.toLocaleString()} tokens`;
+  const entry = { type: 'token', time: timeStr, tokens: tokensUsed, delta, note: note ? `${baseNote} — ${note}` : baseNote };
   logEntries.unshift(entry);
   if (logEntries.length > 200) logEntries.pop();
   renderLog();
@@ -329,7 +341,16 @@ function updateDisplay() {
     const recent = tokenHistory.slice(-10);
     const oldest = recent[0]; const newest = recent[recent.length - 1];
     const mins = (newest.time - oldest.time) / 60000;
-    if (mins > 0) document.getElementById('burnRate').textContent = Math.round((newest.tokens - oldest.tokens) / mins).toLocaleString();
+    if (mins > 0) {
+      const rate = Math.round((newest.tokens - oldest.tokens) / mins);
+      document.getElementById('burnRate').textContent = rate.toLocaleString();
+      const projEl = document.getElementById('projectedTime');
+      if (projEl && budget > 0 && rate > 0) {
+        const remaining = Math.max(0, budget - tokensUsed);
+        const minsLeft = Math.round(remaining / rate);
+        projEl.textContent = minsLeft > 60 ? `~${Math.floor(minsLeft/60)}h ${minsLeft%60}m to limit` : `~${minsLeft}m to limit`;
+      }
+    }
   }
   const maxBucket = Math.max(...hourlyBuckets, 1);
   const bars = document.querySelectorAll('.rate-bar');
