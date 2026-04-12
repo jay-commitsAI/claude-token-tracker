@@ -155,85 +155,95 @@
         <header>
             <h1>Claude Token Tracker</h1>
             <div class="header-meta">
-                <div>Last updated: <span id="updated">2026-04-12 00:00:00</span></div>
+                <div>Last updated: <span id="updated">2026-04-12 18:32:00</span></div>
             </div>
         </header>
 
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-label">Today's Tokens</div>
-                <div class="metric-value" id="todayValue">889,200</div>
+                <div class="metric-value" id="todayValue">1,388,481</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">7-Day Window</div>
-                <div class="metric-value" id="windowValue">251,900</div>
+                <div class="metric-label">5-Hour Window</div>
+                <div class="metric-value" id="windowValue">457,057</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Total (All Time)</div>
-                <div class="metric-value" id="totalValue">65,674,637</div>
+                <div class="metric-value" id="totalValue">67,441,795</div>
             </div>
         </div>
 
         <div class="charts-grid">
             <div class="chart-container">
-                <div class="chart-title">Daily Token Usage (7 days)</div>
+                <div class="chart-title">Daily Token Usage (14 days)</div>
                 <canvas id="dailyChart"></canvas>
             </div>
             <div class="chart-container">
-                <div class="chart-title">Hourly Breakdown (Last 24h)</div>
+                <div class="chart-title">Hourly Breakdown (Today)</div>
                 <canvas id="hourlyChart"></canvas>
             </div>
         </div>
 
         <div class="recent-sessions">
-            <h2>Recent Sessions</h2>
+            <h2>Recent Sessions (Top 5)</h2>
             <div id="sessionsList"></div>
         </div>
     </div>
 
     <script>
         const DATA = {
-            generatedAt: "2026-04-12T00:00:00.000000",
+            generatedAt: "2026-04-12T18:32:00.000000",
             today: "2026-04-12",
-            todayTokens: 889200,
-            windowTokens: 251900,
-            totalTokens: 65674637,
-            dailyLabels: ["2026-04-05", "2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10", "2026-04-11"],
-            dailySessions: [3, 5, 2, 6, 4, 3, 7],
-            dailyTokensK: [245.3, 389.2, 156.8, 412.5, 298.1, 267.4, 889.2],
-            hourlyTokensK: [12.5, 8.3, 5.2, 3.1, 2.8, 15.4, 22.1, 18.9, 34.5, 41.2, 48.3, 52.1, 45.3, 38.9, 35.6, 41.2, 48.5, 44.1, 39.8, 36.2, 29.4, 24.1, 18.5, 14.3],
+            todaySessionCount: 9,
+            todayTokens: 1388481,
+            totalSessions: 262,
+            totalTokens: 67441795,
+            windowTokens: 457057,
+            windowBudget: 200000,
+            windowPct: 228.5,
+            windowStartISO: "2026-04-12T13:32:00Z",
+            dailyLabels: ["03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07", "04-08", "04-09", "04-10", "04-11", "04-12"],
+            dailySessions: [12, 15, 15, 7, 9, 8, 14, 12, 16, 18, 12, 14, 10, 9],
+            dailyTokensK: [7301.0, 9172.9, 4174.1, 820.6, 1220.5, 1173.5, 1680.3, 1505.7, 1568.4, 1883.6, 1199.6, 1268.2, 1374.8, 1385.5],
+            hourlyTokensK: [160.2, 0, 0, 0, 0, 0, 311.9, 0, 151.9, 0, 0, 152.9, 0, 0, 0, 0, 152.9, 0, 304.2, 0, 0, 0, 0, 0],
             recentSessions: [
                 {
-                    timestamp: "2026-04-11 22:45",
-                    title: "Building Claude and Tools/Guides — scheduling tasks",
+                    timestamp: "2026-04-12 18:32",
+                    title: "Claude usage intraday",
                     model: "claude-haiku-4-5",
-                    tokensK: 124.5
+                    tokensK: 152.9
                 },
                 {
-                    timestamp: "2026-04-11 20:15",
-                    title: "Project architecture review",
-                    model: "claude-opus-4-6",
-                    tokensK: 89.3
-                },
-                {
-                    timestamp: "2026-04-11 18:30",
-                    title: "Code refactoring session",
+                    timestamp: "2026-04-12 18:22",
+                    title: "Audit cowork projects and code chats",
                     model: "claude-sonnet-4-6",
-                    tokensK: 156.2
+                    tokensK: 151.2
                 },
                 {
-                    timestamp: "2026-04-11 15:20",
-                    title: "Documentation generation",
+                    timestamp: "2026-04-12 16:31",
+                    title: "Claude usage intraday",
                     model: "claude-haiku-4-5",
-                    tokensK: 67.8
+                    tokensK: 152.9
                 },
                 {
-                    timestamp: "2026-04-11 12:05",
-                    title: "API integration planning",
-                    model: "claude-opus-4-6",
-                    tokensK: 98.5
+                    timestamp: "2026-04-12 11:33",
+                    title: "Claude usage intraday",
+                    model: "claude-haiku-4-5",
+                    tokensK: 152.9
+                },
+                {
+                    timestamp: "2026-04-12 10:24",
+                    title: "Build Real AI Guide logos in Canva",
+                    model: "claude-sonnet-4-6",
+                    tokensK: 151.5
                 }
-            ]
+            ],
+            modelCounts: {
+                "claude-haiku-4-5": 124,
+                "claude-sonnet-4-6": 102,
+                "claude-opus-4-6": 36
+            }
         };
 
         // Initialize metrics
