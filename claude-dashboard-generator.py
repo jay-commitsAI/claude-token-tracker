@@ -46,37 +46,88 @@ BYTES_PER_TOKEN = 3.5     # calibrated estimate from session analysis
 OUTPUT_FILE = Path(__file__).parent / "index.html"
 
 # ── DATA COLLECTION ──────────────────────────────────────────────────────────
+def _parse_fields(data: dict, size: int, session_id: str) -> dict:
+    """Normalise raw session JSON into a standard session record."""
+    created = data.get("createdAt", "")
+    last_activity = data.get("lastActivityAt", "")
+    if isinstance(created, int):
+        created = datetime.fromtimestamp(created / 1000).isoformat()
+    if isinstance(last_activity, int):
+        last_activity = datetime.fromtimestamp(last_activity / 1000).isoformat()
+    created = str(created)
+    return {
+        "id": session_id,
+        "title": str(data.get("title", "Untitled")),
+        "createdAt": created,
+        "lastActivityAt": str(last_activity),
+        "model": str(data.get("model", "unknown")),
+        "sizeBytes": size,
+        "sizeKB": round(size / 1024, 1),
+        "estimatedTokens": round(size / BYTES_PER_TOKEN),
+        "hour": created[11:13] if len(created) >= 13 else "00",
+    }
+
+
 def load_sessions(session_dir: Path) -> list:
+    """
+    Load sessions from two supported layouts:
+
+    Format A (flat):   <session_dir>/local_{uuid}.json
+    Format B (nested): <session_dir>/{workspace-uuid}/{session-uuid}/*.json
+                       e.g. …/local-agent-mode-sessions/1527e537-…/805d7a0a-…/
+
+    Token count is estimated from file / folder size ÷ BYTES_PER_TOKEN.
+    """
     sessions = []
     if not session_dir.exists():
         print(f"⚠️  Session directory not found: {session_dir}", file=sys.stderr)
         return sessions
 
+    # ── Format A: flat local_*.json files ────────────────────────────────────
+    flat_count = 0
     for f in sorted(session_dir.glob("local_*.json")):
         size = f.stat().st_size
         try:
             data = json.loads(f.read_text(encoding="utf-8"))
-            created = data.get("createdAt", "")
-            last_activity = data.get("lastActivityAt", "")
-            if isinstance(created, int):
-                created = datetime.fromtimestamp(created / 1000).isoformat()
-            if isinstance(last_activity, int):
-                last_activity = datetime.fromtimestamp(last_activity / 1000).isoformat()
-            created = str(created)
-            last_activity = str(last_activity)
-            sessions.append({
-                "id": f.stem.replace("local_", ""),
-                "title": str(data.get("title", "Untitled")),
-                "createdAt": created,
-                "lastActivityAt": last_activity,
-                "model": str(data.get("model", "unknown")),
-                "sizeBytes": size,
-                "sizeKB": round(size / 1024, 1),
-                "estimatedTokens": round(size / BYTES_PER_TOKEN),
-                "hour": created[11:13] if len(created) >= 13 else "00"
-            })
+            if not data.get("createdAt"):
+                continue
+            sessions.append(_parse_fields(data, size, f.stem.replace("local_", "")))
+            flat_count += 1
         except Exception as e:
             print(f"  Skip {f.name}: {e}", file=sys.stderr)
+
+    # ── Format B: nested {workspace}/{session}/ UUID directories ─────────────
+    # Each session folder can contain any *.json file with metadata.
+    # Use total folder size for the token estimate (more accurate for multi-file sessions).
+    nested_count = 0
+    for workspace in sorted(session_dir.iterdir()):
+        if not workspace.is_dir():
+            continue
+        for session_folder in sorted(workspace.iterdir()):
+            if not session_folder.is_dir():
+                continue
+            # Total size of everything inside the session folder
+            folder_size = sum(
+                f.stat().st_size for f in session_folder.rglob("*") if f.is_file()
+            )
+            if folder_size < 200:
+                continue
+            # Find the first JSON file that looks like session metadata
+            for json_file in sorted(session_folder.glob("*.json")):
+                try:
+                    data = json.loads(json_file.read_text(encoding="utf-8"))
+                    if not data.get("createdAt"):
+                        continue
+                    sessions.append(_parse_fields(data, folder_size, session_folder.name))
+                    nested_count += 1
+                    break
+                except Exception:
+                    continue
+
+    if nested_count:
+        print(f"   Format B (nested UUID): {nested_count} sessions")
+    if flat_count:
+        print(f"   Format A (flat local_*): {flat_count} sessions")
 
     sessions.sort(key=lambda x: x["createdAt"])
     return sessions
@@ -473,10 +524,9 @@ def build_html(data: dict) -> str:
 # ── MAIN ──────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("🔍 Scanning session files...")
-    real_dir = find_session_dir(SESSION_DIR)
-    print(f"   Directory: {real_dir}")
-    sessions = load_sessions(real_dir)
-    print(f"   Found {len(sessions)} sessions")
+    print(f"   Directory: {SESSION_DIR}")
+    sessions = load_sessions(SESSION_DIR)
+    print(f"   Found {len(sessions)} sessions total")
 
     if not sessions:
         print("❌ No sessions found. Check SESSION_DIR path.")
