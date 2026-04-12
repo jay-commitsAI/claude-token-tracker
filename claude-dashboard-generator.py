@@ -43,7 +43,7 @@ def find_session_dir(base: Path) -> Path:
 
 WINDOW_BUDGET = 200_000   # estimated tokens per 5-hour Pro window
 BYTES_PER_TOKEN = 3.5     # calibrated estimate from session analysis
-OUTPUT_FILE = Path(__file__).parent / "claude-dashboard.html"
+OUTPUT_FILE = Path(__file__).parent / "index.html"
 
 # ── DATA COLLECTION ──────────────────────────────────────────────────────────
 def load_sessions(session_dir: Path) -> list:
@@ -251,10 +251,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       <div class="kpi-value">TODAY_TOKENS_K</div>
       <div class="kpi-sub">~3.5 bytes/token estimate</div>
     </div>
-    <div class="kpi warn">
+    <div class="kpi warn" id="kpiWindowCard">
       <div class="kpi-label">5-Hr Window Used</div>
-      <div class="kpi-value">WINDOW_PCT%</div>
-      <div class="kpi-sub">WINDOW_TOKENS_K of WINDOW_BUDGET_K budget</div>
+      <div class="kpi-value" id="kpiWindowPct">WINDOW_PCT%</div>
+      <div class="kpi-sub" id="kpiWindowSub">WINDOW_TOKENS_K of WINDOW_BUDGET_K budget</div>
     </div>
     <div class="kpi ok">
       <div class="kpi-label">All-Time Sessions</div>
@@ -266,11 +266,11 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   <div class="window-card">
     <h2>⏱ Active 5-Hour Window — Rolling Reset</h2>
     <div class="progress-bar-outer">
-      <div class="progress-bar-inner WINDOW_BAR_CLASS" style="width: WINDOW_PCT_CSS%"></div>
+      <div class="progress-bar-inner WINDOW_BAR_CLASS" id="windowBar" style="width: WINDOW_PCT_CSS%"></div>
     </div>
     <div class="progress-labels">
       <span>0</span>
-      <span style="color:WINDOW_COLOR">WINDOW_TOKENS_K tokens used (WINDOW_PCT%)</span>
+      <span id="windowProgressLabel" style="color:WINDOW_COLOR">WINDOW_TOKENS_K tokens used (WINDOW_PCT%)</span>
       <span>~WINDOW_BUDGET_K budget</span>
     </div>
     <div style="margin-top:14px; font-size:13px; color:var(--muted)">
@@ -315,24 +315,37 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <script>
 const DATA = DATA_JSON_PLACEHOLDER;
 
+function resetWindowDisplay() {
+  // Called when the 5-hour window has expired — clears stale baked-in usage stats
+  const bar = document.getElementById('windowBar');
+  if (bar) { bar.style.width = '0%'; bar.className = 'progress-bar-inner bar-ok'; }
+  const pct = document.getElementById('kpiWindowPct');
+  if (pct) { pct.textContent = '0%'; pct.style.color = 'var(--ok)'; }
+  const sub = document.getElementById('kpiWindowSub');
+  if (sub) { sub.textContent = 'Window reset — fresh budget available'; sub.style.color = 'var(--ok)'; }
+  const lbl = document.getElementById('windowProgressLabel');
+  if (lbl) { lbl.textContent = '0 tokens — window has reset'; lbl.style.color = 'var(--ok)'; }
+  const card = document.getElementById('kpiWindowCard');
+  if (card) card.className = 'kpi ok';
+}
+
 function updateCountdown() {
-  // windowStartISO = most recent session timestamp; window expires 5h after that
   const anchor = DATA.windowStartISO ? new Date(DATA.windowStartISO).getTime() : null;
   const el = document.getElementById('countdown');
-  if (!anchor) { el.textContent = 'No session data'; return; }
+  if (!anchor) { if (el) el.textContent = 'No session data'; return; }
   const windowEnd = anchor + (5 * 60 * 60 * 1000);
   const now = Date.now();
   const diff = windowEnd - now;
   if (diff <= 0) {
-    el.textContent = '✅ Window reset — new 5-hour window available';
-    el.style.color = 'var(--ok)';
+    if (el) { el.textContent = '✅ Window reset — new 5-hour window available'; el.style.color = 'var(--ok)'; }
+    resetWindowDisplay();
     return;
   }
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
   const s = Math.floor((diff % 60000) / 1000);
   const resetTime = new Date(windowEnd).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:true});
-  el.textContent = `Next reset in: ${h}h ${m}m ${s}s  (at ${resetTime})`;
+  if (el) el.textContent = `Next reset in: ${h}h ${m}m ${s}s  (at ${resetTime})`;
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);

@@ -1,5 +1,8 @@
 {
   "framework": null,
   "outputDirectory": ".",
-  "buildCommand": ""
+  "buildCommand": "",
+  "redirects": [
+    { "source": "/claude-dashboard.html", "destination": "/", "permanent": false }
+  ]
 }

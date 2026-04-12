@@ -66,6 +66,7 @@
 <header>
   <h1>⚡ Claude <span>Session Dashboard</span><span class="peak-badge" id="peakBadge" style="display:none">🔥 PEAK HOURS</span></h1>
   <div style="display:flex;align-items:center;gap:16px">
+    <a href="/manual-tracker.html" style="color:var(--muted);font-size:12px;text-decoration:none;white-space:nowrap">→ Manual Tracker</a>
     <span class="gen-time" id="genTime">Generated: 2026-04-05 03:19:07</span>
     <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
   </div>
@@ -82,10 +83,10 @@
       <div class="kpi-value">733.7K</div>
       <div class="kpi-sub">~3.5 bytes/token estimate</div>
     </div>
-    <div class="kpi warn">
+    <div class="kpi warn" id="kpiWindowCard">
       <div class="kpi-label">5-Hr Window Used</div>
-      <div class="kpi-value">147%</div>
-      <div class="kpi-sub">294.5K of 200K budget</div>
+      <div class="kpi-value" id="kpiWindowPct">147%</div>
+      <div class="kpi-sub" id="kpiWindowSub">294.5K of 200K budget</div>
     </div>
     <div class="kpi ok">
       <div class="kpi-label">All-Time Sessions</div>
@@ -96,12 +97,16 @@
   <div class="window-card">
     <h2>⏱ Active 5-Hour Window — Rolling Reset</h2>
     <div class="progress-bar-outer">
-      <div class="progress-bar-inner bar-danger" id="windowBar" style="width: 147%"></div>
+      <div class="progress-bar-inner bar-danger" id="windowBar" style="width: 100%"></div>
     </div>
     <div class="progress-labels">
       <span>0</span>
-      <span style="color:#ef4444">294.5K tokens used (147%)</span>
+      <span id="windowProgressLabel" style="color:#ef4444">294.5K tokens used (147%)</span>
       <span>~200K budget</span>
+    </div>
+    <div style="margin-top:14px; font-size:13px; color:var(--muted)">
+      ℹ️ Claude Pro resets every 5 hours from first message in window. Budget is an estimate — actual limits vary.
+      <div class="countdown" id="countdown"></div>
     </div>
   </div>
   <div class="charts-row">
@@ -141,7 +146,7 @@
 </main>
 <footer>Claude Session Dashboard — Latest data from 2026-04-05 03:19:07 UTC</footer>
 <script>
-const DATA = {"generatedAt": "2026-04-05 03:19:07", "dailyLabels": ["03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05"], "dailySessions": [4, 11, 11, 14, 10, 9, 6, 13, 13, 16, 6, 8, 10, 5], "dailyTokensK": [713.3, 3813.2, 5985.0, 8034.1, 6214.4, 4527.1, 3192.8, 8602.6, 8336.0, 3852.8, 858.5, 1170.8, 1331.6, 733.7], "hourlyTokensK": [0, 0, 0, 294.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
+const DATA = {"generatedAt": "2026-04-05 03:19:07", "windowStartISO": "2026-04-05T03:19:07", "dailyLabels": ["03-23", "03-24", "03-25", "03-26", "03-27", "03-28", "03-29", "03-30", "03-31", "04-01", "04-02", "04-03", "04-04", "04-05"], "dailySessions": [4, 11, 11, 14, 10, 9, 6, 13, 13, 16, 6, 8, 10, 5], "dailyTokensK": [713.3, 3813.2, 5985.0, 8034.1, 6214.4, 4527.1, 3192.8, 8602.6, 8336.0, 3852.8, 858.5, 1170.8, 1331.6, 733.7], "hourlyTokensK": [0, 0, 0, 294.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
 new Chart(document.getElementById('dailyChart'), {
   type: 'bar',
   data: {
@@ -191,6 +196,40 @@ new Chart(document.getElementById('hourlyChart'), {
     }
   }
 });
+
+function resetWindowDisplay() {
+  const bar = document.getElementById('windowBar');
+  if (bar) { bar.style.width = '0%'; bar.className = 'progress-bar-inner bar-ok'; }
+  const pct = document.getElementById('kpiWindowPct');
+  if (pct) { pct.textContent = '0%'; pct.style.color = 'var(--ok)'; }
+  const sub = document.getElementById('kpiWindowSub');
+  if (sub) { sub.textContent = 'Window reset — fresh budget available'; sub.style.color = 'var(--ok)'; }
+  const lbl = document.getElementById('windowProgressLabel');
+  if (lbl) { lbl.textContent = '0 tokens — window has reset'; lbl.style.color = 'var(--ok)'; }
+  const card = document.getElementById('kpiWindowCard');
+  if (card) card.className = 'kpi ok';
+}
+
+function updateCountdown() {
+  const anchor = DATA.windowStartISO ? new Date(DATA.windowStartISO).getTime() : null;
+  const el = document.getElementById('countdown');
+  if (!anchor) { if (el) el.textContent = 'No session data'; return; }
+  const windowEnd = anchor + (5 * 60 * 60 * 1000);
+  const now = Date.now();
+  const diff = windowEnd - now;
+  if (diff <= 0) {
+    if (el) { el.textContent = '✅ Window reset — new 5-hour window available'; el.style.color = 'var(--ok)'; }
+    resetWindowDisplay();
+    return;
+  }
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  const resetTime = new Date(windowEnd).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:true});
+  if (el) el.textContent = `Next reset in: ${h}h ${m}m ${s}s  (at ${resetTime})`;
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
 </script>
 </body>
 </html>
