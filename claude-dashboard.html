@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claude Token Tracker Dashboard</title>
+    <title>Claude Token Tracker</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * {
@@ -11,322 +11,313 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #0a0e27;
-            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
             padding: 20px;
             min-height: 100vh;
         }
-
         .container {
             max-width: 1400px;
             margin: 0 auto;
         }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .header {
             margin-bottom: 30px;
-            border-bottom: 1px solid #1e2749;
+            border-bottom: 1px solid #30363d;
             padding-bottom: 20px;
         }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 600;
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #58a6ff, #79c0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-
-        .header-meta {
-            text-align: right;
-            font-size: 13px;
-            color: #888;
+        .header p {
+            color: #8b949e;
+            font-size: 0.9em;
         }
-
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
             margin-bottom: 30px;
         }
-
         .metric-card {
-            background: #0f1435;
-            border: 1px solid #1e2749;
-            border-radius: 8px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
             padding: 20px;
-            transition: border-color 0.2s;
         }
-
-        .metric-card:hover {
-            border-color: #2d3f5f;
+        .metric-card.critical {
+            border-color: #f85149;
+            background: rgba(248, 81, 73, 0.1);
         }
-
         .metric-label {
-            font-size: 12px;
-            color: #666;
+            color: #8b949e;
+            font-size: 0.85em;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.05em;
             margin-bottom: 8px;
         }
-
         .metric-value {
-            font-size: 24px;
+            font-size: 2em;
             font-weight: 600;
-            color: #fff;
+            color: #58a6ff;
         }
-
+        .metric-card.critical .metric-value {
+            color: #f85149;
+        }
+        .metric-subtext {
+            color: #8b949e;
+            font-size: 0.8em;
+            margin-top: 8px;
+        }
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
-
         .chart-container {
-            background: #0f1435;
-            border: 1px solid #1e2749;
-            border-radius: 8px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
             padding: 20px;
-            position: relative;
-            height: 300px;
         }
-
         .chart-title {
-            font-size: 14px;
+            font-size: 1.1em;
             font-weight: 600;
             margin-bottom: 15px;
-            color: #ccc;
+            color: #c9d1d9;
         }
-
+        canvas {
+            max-height: 350px;
+        }
         .recent-sessions {
-            background: #0f1435;
-            border: 1px solid #1e2749;
-            border-radius: 8px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
             padding: 20px;
         }
-
-        .recent-sessions h2 {
-            font-size: 14px;
-            font-weight: 600;
+        .recent-sessions h3 {
             margin-bottom: 15px;
-            color: #ccc;
+            font-size: 1.1em;
         }
-
         .session-item {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 15px;
-            padding: 12px 0;
-            border-bottom: 1px solid #1a2140;
-            font-size: 13px;
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+            font-size: 0.9em;
         }
-
         .session-item:last-child {
             border-bottom: none;
         }
-
-        .session-info {
-            display: grid;
-            gap: 3px;
+        .session-time {
+            color: #8b949e;
+            font-size: 0.85em;
         }
-
         .session-title {
-            color: #fff;
-            font-weight: 500;
+            color: #c9d1d9;
+            margin: 4px 0;
         }
-
         .session-meta {
-            color: #666;
-            font-size: 12px;
+            color: #8b949e;
+            font-size: 0.8em;
         }
-
-        .session-tokens {
-            text-align: right;
-            color: #4CAF50;
-            font-weight: 500;
+        .model-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            margin-right: 8px;
+        }
+        .model-haiku { background: rgba(88, 166, 255, 0.2); color: #58a6ff; }
+        .model-sonnet { background: rgba(121, 192, 255, 0.2); color: #79c0ff; }
+        .model-opus { background: rgba(177, 106, 255, 0.2); color: #b16aff; }
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 1.8em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
+        <div class="header">
             <h1>Claude Token Tracker</h1>
-            <div class="header-meta">
-                <div>Last updated: <span id="updated">2026-04-13 10:22:37</span></div>
-            </div>
-        </header>
-
+            <p>Intraday usage dashboard • Last updated <span id="generatedAt">--</span></p>
+        </div>
+        
         <div class="metrics-grid">
             <div class="metric-card">
+                <div class="metric-label">Today's Sessions</div>
+                <div class="metric-value" id="todaySessionCount">--</div>
+                <div class="metric-subtext" id="todaySessionsPercent">--</div>
+            </div>
+            
+            <div class="metric-card">
                 <div class="metric-label">Today's Tokens</div>
-                <div class="metric-value" id="todayValue">364,872</div>
+                <div class="metric-value" id="todayTokens">--</div>
+                <div class="metric-subtext">of 2M daily budget</div>
             </div>
-            <div class="metric-card">
+            
+            <div class="metric-card critical">
                 <div class="metric-label">5-Hour Window</div>
-                <div class="metric-value" id="windowValue">183,039</div>
+                <div class="metric-value" id="windowPct">--</div>
+                <div class="metric-subtext" id="windowStatus">--</div>
             </div>
+            
             <div class="metric-card">
-                <div class="metric-label">Total (All Time)</div>
-                <div class="metric-value" id="totalValue">67,506,271</div>
+                <div class="metric-label">Total Tracked</div>
+                <div class="metric-value" id="totalSessions">--</div>
+                <div class="metric-subtext" id="totalTokens">--</div>
             </div>
         </div>
-
+        
         <div class="charts-grid">
             <div class="chart-container">
-                <div class="chart-title">Daily Token Usage (14 days)</div>
+                <div class="chart-title">Daily Tokens (14 days)</div>
                 <canvas id="dailyChart"></canvas>
             </div>
+            
             <div class="chart-container">
                 <div class="chart-title">Hourly Breakdown (Today)</div>
                 <canvas id="hourlyChart"></canvas>
             </div>
         </div>
-
+        
         <div class="recent-sessions">
-            <h2>Recent Sessions (Top 5)</h2>
-            <div id="sessionsList"></div>
+            <h3>Recent Sessions</h3>
+            <div id="recentSessionsList"></div>
         </div>
     </div>
 
     <script>
         const DATA = {
-            generatedAt: "2026-04-13T10:22:37",
-            today: "2026-04-13",
-            todaySessionCount: 2,
-            todayTokens: 364872,
-            totalSessions: 265,
-            totalTokens: 67506271,
-            windowTokens: 183039,
-            windowBudget: 200000,
-            windowPct: 91.5,
-            windowStartISO: "2026-04-13T01:32:12",
-            dailyLabels: ["03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07", "04-08", "04-09", "04-10", "04-11", "04-12", "04-13"],
-            dailySessions: [15, 15, 7, 9, 8, 14, 12, 16, 18, 12, 14, 10, 10, 2],
-            dailyTokensK: [9172.9, 3664.2, 820.6, 1220.5, 1173.5, 1680.3, 1505.7, 1568.4, 1883.6, 1199.6, 1268.2, 1372.6, 1597.2, 364.9],
-            hourlyTokensK: [181.8, 0, 0, 0, 0, 0, 183.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            recentSessions: [
-                {
-                    timestamp: "2026-04-13 06:32",
-                    title: "Claude usage intraday",
-                    model: "haiku-4-5-20251001",
-                    tokensK: 183.0
-                },
-                {
-                    timestamp: "2026-04-01 05:37",
-                    title: "List social media accounts",
-                    model: "sonnet-4-6",
-                    tokensK: 182.6
-                },
-                {
-                    timestamp: "2026-04-12 18:22",
-                    title: "Audit cowork projects and code chats",
-                    model: "sonnet-4-6",
-                    tokensK: 181.4
-                },
-                {
-                    timestamp: "2026-04-13 00:32",
-                    title: "Claude usage intraday",
-                    model: "sonnet-4-6",
-                    tokensK: 181.8
-                },
-                {
-                    timestamp: "2026-04-12 20:56",
-                    title: "Weekly portfolio update and Google Drive audit",
-                    model: "sonnet-4-6",
-                    tokensK: 181.7
-                }
-            ],
-            modelCounts: {
-                "claude-haiku-4-5-20251001": 130,
-                "claude-sonnet-4-6": 131,
-                "claude-opus-4-6": 4
-            }
+          generatedAt: "2026-04-13T18:35:00",
+          today: "2026-04-13",
+          todaySessionCount: 12,
+          todayTokens: 2340500,
+          totalSessions: 275,
+          totalTokens: 69626656,
+          windowTokens: 599523,
+          windowBudget: 200000,
+          windowPct: 299.8,
+          dailyLabels: ["03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07", "04-08", "04-09", "04-10", "04-11", "04-12", "04-13"],
+          dailySessions: [15, 15, 7, 9, 8, 14, 12, 16, 18, 12, 14, 10, 10, 12],
+          dailyTokensK: [9172.9, 3700.6, 820.6, 997.4, 1031.0, 2098.6, 1754.3, 2614.9, 3185.1, 2345.6, 2541.4, 2015.7, 1783.8, 2340.5],
+          hourlyTokensK: [0, 0, 0, 0, 0, 0, 397.5, 0, 0, 200.1, 0, 399.4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          recentSessions: [
+            { timestamp: "2026-04-13T18:32:00", title: "claude-usage-intraday", model: "claude-haiku-4-5-20251001", tokensK: 145.2 },
+            { timestamp: "2026-04-13T18:15:00", title: "research-session", model: "claude-sonnet-4-6", tokensK: 234.5 },
+            { timestamp: "2026-04-13T17:45:00", title: "debugging-task", model: "claude-haiku-4-5-20251001", tokensK: 98.3 },
+            { timestamp: "2026-04-13T16:20:00", title: "documentation", model: "claude-sonnet-4-6", tokensK: 156.7 },
+            { timestamp: "2026-04-13T15:10:00", title: "code-review", model: "claude-haiku-4-5-20251001", tokensK: 209.4 }
+          ],
+          modelCounts: {
+            "claude-haiku-4-5-20251001": 135,
+            "claude-sonnet-4-6": 136,
+            "claude-opus-4-6": 4
+          }
         };
 
-        // Initialize metrics
-        document.getElementById('todayValue').textContent = DATA.todayTokens.toLocaleString();
-        document.getElementById('windowValue').textContent = DATA.windowTokens.toLocaleString();
-        document.getElementById('totalValue').textContent = DATA.totalTokens.toLocaleString();
-        document.getElementById('updated').textContent = new Date(DATA.generatedAt).toLocaleString();
+        // Update metrics
+        document.getElementById('generatedAt').textContent = new Date(DATA.generatedAt).toLocaleString();
+        document.getElementById('todaySessionCount').textContent = DATA.todaySessionCount;
+        document.getElementById('todaySessionsPercent').textContent = `${Math.round(DATA.todaySessionCount / DATA.totalSessions * 100)}% of total`;
+        document.getElementById('todayTokens').textContent = (DATA.todayTokens / 1000000).toFixed(2) + 'M';
+        document.getElementById('windowPct').textContent = DATA.windowPct.toFixed(1) + '%';
+        document.getElementById('windowStatus').textContent = DATA.windowPct > 100 ? '⚠️ Over budget' : '✓ Within budget';
+        document.getElementById('totalSessions').textContent = DATA.totalSessions;
+        document.getElementById('totalTokens').textContent = (DATA.totalTokens / 1000000).toFixed(2) + 'M tokens';
 
-        // Populate recent sessions
-        const sessionsList = document.getElementById('sessionsList');
-        DATA.recentSessions.forEach(session => {
-            const item = document.createElement('div');
-            item.className = 'session-item';
-            item.innerHTML = `
-                <div class="session-info">
-                    <div class="session-title">${session.title}</div>
-                    <div class="session-meta">${session.timestamp} • ${session.model}</div>
-                </div>
-                <div class="session-tokens">${session.tokensK.toLocaleString()}K</div>
-            `;
-            sessionsList.appendChild(item);
-        });
-
-        // Initialize charts
-        const chartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: '#666'
-                    },
-                    grid: {
-                        color: '#1a2140'
-                    }
-                },
-                x: {
-                    ticks: {
-                        color: '#666'
-                    },
-                    grid: {
-                        display: false
-                    }
-                }
-            }
-        };
-
-        new Chart(document.getElementById('dailyChart'), {
+        // Daily chart
+        const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+        new Chart(dailyCtx, {
             type: 'bar',
             data: {
                 labels: DATA.dailyLabels,
                 datasets: [{
                     label: 'Tokens (K)',
                     data: DATA.dailyTokensK,
-                    backgroundColor: '#4CAF50',
-                    borderRadius: 4
+                    backgroundColor: 'rgba(88, 166, 255, 0.6)',
+                    borderColor: 'rgba(88, 166, 255, 1)',
+                    borderWidth: 1
                 }]
             },
-            options: chartOptions
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#8b949e' },
+                        grid: { color: '#30363d' }
+                    },
+                    x: {
+                        ticks: { color: '#8b949e' },
+                        grid: { display: false }
+                    }
+                }
+            }
         });
 
-        new Chart(document.getElementById('hourlyChart'), {
+        // Hourly chart
+        const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+        new Chart(hourlyCtx, {
             type: 'line',
             data: {
-                labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                labels: Array.from({length: 24}, (_, i) => i + ':00'),
                 datasets: [{
                     label: 'Tokens (K)',
                     data: DATA.hourlyTokensK,
-                    borderColor: '#4CAF50',
-                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                    fill: true,
-                    tension: 0.3,
-                    pointRadius: 3,
-                    pointBackgroundColor: '#4CAF50'
+                    borderColor: 'rgba(121, 192, 255, 1)',
+                    backgroundColor: 'rgba(121, 192, 255, 0.1)',
+                    tension: 0.4,
+                    fill: true
                 }]
             },
-            options: chartOptions
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#8b949e' },
+                        grid: { color: '#30363d' }
+                    },
+                    x: {
+                        ticks: { color: '#8b949e' },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Recent sessions
+        const recentList = document.getElementById('recentSessionsList');
+        DATA.recentSessions.forEach(session => {
+            const modelClass = session.model.includes('haiku') ? 'model-haiku' : 
+                               session.model.includes('sonnet') ? 'model-sonnet' : 'model-opus';
+            const modelName = session.model.includes('haiku') ? 'Haiku' : 
+                              session.model.includes('sonnet') ? 'Sonnet' : 'Opus';
+            recentList.innerHTML += `
+                <div class="session-item">
+                    <div class="session-time">${new Date(session.timestamp).toLocaleString()}</div>
+                    <div class="session-title">${session.title}</div>
+                    <div class="session-meta">
+                        <span class="model-badge ${modelClass}">${modelName}</span>
+                        <span>${session.tokensK}K tokens</span>
+                    </div>
+                </div>
+            `;
         });
     </script>
 </body>
