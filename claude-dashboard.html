@@ -155,22 +155,22 @@
         <header>
             <h1>Claude Token Tracker</h1>
             <div class="header-meta">
-                <div>Last updated: <span id="updated">2026-04-13 01:57:00</span></div>
+                <div>Last updated: <span id="updated">2026-04-13 06:32:12</span></div>
             </div>
         </header>
 
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-label">Today's Tokens</div>
-                <div class="metric-value" id="todayValue">181,828</div>
+                <div class="metric-value" id="todayValue">364,872</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">5-Hour Window</div>
-                <div class="metric-value" id="windowValue">181,828</div>
+                <div class="metric-value" id="windowValue">183,039</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Total (All Time)</div>
-                <div class="metric-value" id="totalValue">67,833,123</div>
+                <div class="metric-value" id="totalValue">67,506,271</div>
             </div>
         </div>
 
@@ -193,54 +193,54 @@
 
     <script>
         const DATA = {
-            generatedAt: "2026-04-13T01:57:00.000000",
+            generatedAt: "2026-04-13T06:32:12",
             today: "2026-04-13",
-            todaySessionCount: 1,
-            todayTokens: 181828,
-            totalSessions: 264,
-            totalTokens: 67833123,
-            windowTokens: 181828,
+            todaySessionCount: 2,
+            todayTokens: 364872,
+            totalSessions: 265,
+            totalTokens: 67506271,
+            windowTokens: 183039,
             windowBudget: 200000,
-            windowPct: 90.9,
-            windowStartISO: "2026-04-12T20:57:00Z",
+            windowPct: 91.5,
+            windowStartISO: "2026-04-13T01:32:12",
             dailyLabels: ["03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07", "04-08", "04-09", "04-10", "04-11", "04-12", "04-13"],
-            dailySessions: [15, 15, 7, 9, 8, 14, 12, 16, 18, 12, 14, 10, 10, 1],
-            dailyTokensK: [9172.9, 4174.1, 820.6, 1220.5, 1173.5, 1680.3, 1505.7, 1568.4, 1883.6, 1199.6, 1268.2, 1372.6, 1597.2, 181.8],
-            hourlyTokensK: [181.8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            dailySessions: [15, 15, 7, 9, 8, 14, 12, 16, 18, 12, 14, 10, 10, 2],
+            dailyTokensK: [9172.9, 3664.2, 820.6, 1220.5, 1173.5, 1680.3, 1505.7, 1568.4, 1883.6, 1199.6, 1268.2, 1372.6, 1597.2, 364.9],
+            hourlyTokensK: [181.8, 0, 0, 0, 0, 0, 183.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             recentSessions: [
+                {
+                    timestamp: "2026-04-13 06:32",
+                    title: "Claude usage intraday",
+                    model: "haiku-4-5-20251001",
+                    tokensK: 183.0
+                },
+                {
+                    timestamp: "2026-04-01 05:37",
+                    title: "List social media accounts",
+                    model: "sonnet-4-6",
+                    tokensK: 182.6
+                },
+                {
+                    timestamp: "2026-04-12 18:22",
+                    title: "Audit cowork projects and code chats",
+                    model: "sonnet-4-6",
+                    tokensK: 181.4
+                },
                 {
                     timestamp: "2026-04-13 00:32",
                     title: "Claude usage intraday",
-                    model: "claude-sonnet-4-6",
+                    model: "sonnet-4-6",
                     tokensK: 181.8
                 },
                 {
                     timestamp: "2026-04-12 20:56",
                     title: "Weekly portfolio update and Google Drive audit",
-                    model: "claude-sonnet-4-6",
+                    model: "sonnet-4-6",
                     tokensK: 181.7
-                },
-                {
-                    timestamp: "2026-04-12 18:32",
-                    title: "Audit cowork projects and code chats",
-                    model: "claude-sonnet-4-6",
-                    tokensK: 181.3
-                },
-                {
-                    timestamp: "2026-04-12 18:32",
-                    title: "Claude usage intraday",
-                    model: "claude-haiku-4-5",
-                    tokensK: 152.9
-                },
-                {
-                    timestamp: "2026-04-12 16:31",
-                    title: "Claude usage intraday",
-                    model: "claude-haiku-4-5",
-                    tokensK: 152.9
                 }
             ],
             modelCounts: {
-                "claude-haiku-4-5": 129,
+                "claude-haiku-4-5-20251001": 130,
                 "claude-sonnet-4-6": 131,
                 "claude-opus-4-6": 4
             }
