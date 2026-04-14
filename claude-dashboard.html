@@ -150,32 +150,32 @@
     <div class="container">
         <div class="header">
             <h1>Claude Token Tracker</h1>
-            <p>Intraday usage dashboard • Last updated <span id="generatedAt">--</span></p>
+            <p>Intraday usage dashboard • Last updated <span id="generatedAt">2026-04-14T00:32:00</span></p>
         </div>
         
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-label">Today's Sessions</div>
-                <div class="metric-value" id="todaySessionCount">--</div>
-                <div class="metric-subtext" id="todaySessionsPercent">--</div>
+                <div class="metric-value" id="todaySessionCount">1</div>
+                <div class="metric-subtext" id="todaySessionsPercent">0% of total</div>
             </div>
             
             <div class="metric-card">
                 <div class="metric-label">Today's Tokens</div>
-                <div class="metric-value" id="todayTokens">--</div>
+                <div class="metric-value" id="todayTokens">0.20M</div>
                 <div class="metric-subtext">of 2M daily budget</div>
             </div>
             
             <div class="metric-card critical">
                 <div class="metric-label">5-Hour Window</div>
-                <div class="metric-value" id="windowPct">--</div>
-                <div class="metric-subtext" id="windowStatus">--</div>
+                <div class="metric-value" id="windowPct">398.7%</div>
+                <div class="metric-subtext" id="windowStatus">⚠️ Over budget</div>
             </div>
             
             <div class="metric-card">
                 <div class="metric-label">Total Tracked</div>
-                <div class="metric-value" id="totalSessions">--</div>
-                <div class="metric-subtext" id="totalTokens">--</div>
+                <div class="metric-value" id="totalSessions">279</div>
+                <div class="metric-subtext" id="totalTokens">71.32M tokens</div>
             </div>
         </div>
         
@@ -199,29 +199,30 @@
 
     <script>
         const DATA = {
-          generatedAt: "2026-04-13T18:35:00",
-          today: "2026-04-13",
-          todaySessionCount: 12,
-          todayTokens: 2340500,
-          totalSessions: 275,
-          totalTokens: 69626656,
-          windowTokens: 599523,
+          generatedAt: "2026-04-14T00:32:00",
+          today: "2026-04-14",
+          todaySessionCount: 1,
+          todayTokens: 200032,
+          totalSessions: 279,
+          totalTokens: 71315456,
+          windowTokens: 797402,
           windowBudget: 200000,
-          windowPct: 299.8,
-          dailyLabels: ["03-31", "04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07", "04-08", "04-09", "04-10", "04-11", "04-12", "04-13"],
-          dailySessions: [15, 15, 7, 9, 8, 14, 12, 16, 18, 12, 14, 10, 10, 12],
-          dailyTokensK: [9172.9, 3700.6, 820.6, 997.4, 1031.0, 2098.6, 1754.3, 2614.9, 3185.1, 2345.6, 2541.4, 2015.7, 1783.8, 2340.5],
-          hourlyTokensK: [0, 0, 0, 0, 0, 0, 397.5, 0, 0, 200.1, 0, 399.4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          windowPct: 398.7,
+          windowStartISO: "2026-04-13T19:31:23Z",
+          dailyLabels: ["04-01", "04-02", "04-03", "04-04", "04-05", "04-06", "04-07", "04-08", "04-09", "04-10", "04-11", "04-12", "04-13", "04-14"],
+          dailySessions: [15, 7, 9, 8, 14, 12, 16, 18, 12, 14, 10, 10, 15, 1],
+          dailyTokensK: [3700.6, 820.6, 1220.5, 1173.5, 1680.3, 1558.0, 1742.1, 2073.5, 1296.3, 1461.5, 1480.2, 1732.0, 2989.3, 200.0],
+          hourlyTokensK: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 200.0],
           recentSessions: [
-            { timestamp: "2026-04-13T18:32:00", title: "claude-usage-intraday", model: "claude-haiku-4-5-20251001", tokensK: 145.2 },
-            { timestamp: "2026-04-13T18:15:00", title: "research-session", model: "claude-sonnet-4-6", tokensK: 234.5 },
-            { timestamp: "2026-04-13T17:45:00", title: "debugging-task", model: "claude-haiku-4-5-20251001", tokensK: 98.3 },
-            { timestamp: "2026-04-13T16:20:00", title: "documentation", model: "claude-sonnet-4-6", tokensK: 156.7 },
-            { timestamp: "2026-04-13T15:10:00", title: "code-review", model: "claude-haiku-4-5-20251001", tokensK: 209.4 }
+            { timestamp: "2026-04-14T00:31:23.126000", title: "Claude usage intraday", model: "claude-haiku-4-5-20251001", tokensK: 200.0 },
+            { timestamp: "2026-04-13T23:48:43.630000", title: "V2 Design Direction and Build Plan", model: "claude-sonnet-4-6", tokensK: 198.7 },
+            { timestamp: "2026-04-13T21:54:38.722000", title: "Fix scheduled market recap automation", model: "claude-sonnet-4-6", tokensK: 199.3 },
+            { timestamp: "2026-04-13T20:05:37.154000", title: "Close recap", model: "claude-haiku-4-5-20251001", tokensK: 199.4 },
+            { timestamp: "2026-04-13T16:32:36.571000", title: "Claude usage intraday", model: "claude-haiku-4-5-20251001", tokensK: 200.1 }
           ],
           modelCounts: {
-            "claude-haiku-4-5-20251001": 135,
-            "claude-sonnet-4-6": 136,
+            "claude-haiku-4-5-20251001": 137,
+            "claude-sonnet-4-6": 138,
             "claude-opus-4-6": 4
           }
         };
