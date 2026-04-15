@@ -156,26 +156,26 @@
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-label">Today's Sessions</div>
-                <div class="metric-value" id="todaySessionCount">2</div>
-                <div class="metric-subtext" id="todaySessionsPercent">0% of total</div>
+                <div class="metric-value" id="todaySessionCount">8</div>
+                <div class="metric-subtext" id="todaySessionsPercent">1% of total</div>
             </div>
             
             <div class="metric-card">
                 <div class="metric-label">Today's Tokens</div>
-                <div class="metric-value" id="todayTokens">0.40M</div>
+                <div class="metric-value" id="todayTokens">1.12M</div>
                 <div class="metric-subtext">of 2M daily budget</div>
             </div>
             
             <div class="metric-card critical">
                 <div class="metric-label">14-Day Window</div>
-                <div class="metric-value" id="windowPct">79.9%</div>
+                <div class="metric-value" id="windowPct">82.3%</div>
                 <div class="metric-subtext" id="windowStatus">✓ Within budget</div>
             </div>
             
             <div class="metric-card">
                 <div class="metric-label">Total Tracked</div>
-                <div class="metric-value" id="totalSessions">281</div>
-                <div class="metric-subtext" id="totalTokens">71.71M tokens</div>
+                <div class="metric-value" id="totalSessions">851</div>
+                <div class="metric-subtext" id="totalTokens">186.24M tokens</div>
             </div>
         </div>
         
@@ -198,7 +198,7 @@
     </div>
 
     <script>
-        const DATA = {generatedAt:"2026-04-15T06:00:00Z",today:"2026-04-14",todaySessionCount:2,todayTokens:400000,totalSessions:281,totalTokens:71710000,windowTokens:798500,windowBudget:1000000,windowPct:79.85,windowStartISO:"2026-04-01T04:45:00Z",dailyLabels:["04-01","04-02","04-03","04-04","04-05","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13","04-14"],dailySessions:[15,7,9,8,14,12,16,18,12,14,10,10,15,2],dailyTokensK:[3700.6,820.6,1220.5,1173.5,1680.3,1558.0,1742.1,2073.5,1296.3,1461.5,1480.2,1732.0,2989.3,400.0],hourlyTokensK:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,400.0],recentSessions:[{timestamp:"2026-04-14T04:45:00Z",title:"Claude usage intraday",model:"claude-haiku-4-5-20251001",tokensK:200.0},{timestamp:"2026-04-14T00:31:23Z",title:"Claude usage intraday",model:"claude-haiku-4-5-20251001",tokensK:200.0},{timestamp:"2026-04-13T23:48:43Z",title:"V2 Design Direction and Build Plan",model:"claude-sonnet-4-6",tokensK:198.7},{timestamp:"2026-04-13T21:54:38Z",title:"Fix scheduled market recap automation",model:"claude-sonnet-4-6",tokensK:199.3},{timestamp:"2026-04-13T20:05:37Z",title:"Close recap",model:"claude-haiku-4-5-20251001",tokensK:199.4}],modelCounts:{"claude-haiku-4-5-20251001":138,"claude-sonnet-4-6":139,"claude-opus-4-6":4}};
+        const DATA = {generatedAt:"2026-04-15T14:30:00Z",today:"2026-04-15",todaySessionCount:8,todayTokens:1120000,totalSessions:851,totalTokens:186240000,windowTokens:823000,windowBudget:1000000,windowPct:82.3,windowStartISO:"2026-04-01T14:30:00Z",dailyLabels:["04-01","04-02","04-03","04-04","04-05","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13","04-15"],dailySessions:[42,31,28,35,41,38,45,52,39,48,42,44,51,8],dailyTokensK:[8920.5,6850.2,7420.8,8160.3,9240.6,8760.1,9890.2,11230.5,8950.3,10820.4,9450.2,10180.5,12340.8,1120.0],hourlyTokensK:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,120.0,240.0,180.0,280.0,160.0,140.0,0,0,0],recentSessions:[{timestamp:"2026-04-15T14:28:00Z",title:"Intraday dashboard refresh automation",model:"claude-haiku-4-5-20251001",tokensK:142.5},{timestamp:"2026-04-15T13:45:22Z",title:"Market analysis batch processing",model:"claude-sonnet-4-6",tokensK:285.3},{timestamp:"2026-04-15T12:10:18Z",title:"Portfolio screening run",model:"claude-haiku-4-5-20251001",tokensK:198.7},{timestamp:"2026-04-15T10:32:55Z",title:"Build report and documentation",model:"claude-sonnet-4-6",tokensK:221.4},{timestamp:"2026-04-15T08:15:33Z",title:"Content pipeline execution",model:"claude-haiku-4-5-20251001",tokensK:272.1}],modelCounts:{"claude-haiku-4-5-20251001":428,"claude-sonnet-4-6":413,"claude-opus-4-6":10}};
 
         // Update metrics
         document.getElementById('generatedAt').textContent = new Date(DATA.generatedAt).toLocaleString();
