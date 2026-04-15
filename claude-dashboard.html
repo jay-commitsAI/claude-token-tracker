@@ -14,17 +14,13 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; min-height: 100vh; }
-
   header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
   header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
   header h1 span { color: var(--accent); }
   .gen-time { font-size: 12px; color: var(--muted); }
   .refresh-btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 7px 16px; font-size: 13px; cursor: pointer; font-weight: 500; transition: opacity .2s; }
   .refresh-btn:hover { opacity: .85; }
-
   main { padding: 24px; max-width: 1400px; margin: 0 auto; }
-
-  /* KPI row */
   .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
   .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
   .kpi-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
@@ -34,8 +30,6 @@
   .kpi.teal .kpi-value { color: var(--accent2); }
   .kpi.warn .kpi-value { color: var(--warn); }
   .kpi.ok .kpi-value { color: var(--ok); }
-
-  /* Window progress */
   .window-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
   .window-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
   .progress-bar-outer { background: var(--border); border-radius: 99px; height: 12px; overflow: hidden; margin-bottom: 8px; }
@@ -44,15 +38,11 @@
   .bar-warn { background: linear-gradient(90deg, var(--warn), #f97316); }
   .bar-danger { background: linear-gradient(90deg, var(--danger), #dc2626); }
   .progress-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
-
-  /* Charts */
   .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
   @media (max-width: 900px) { .charts-row { grid-template-columns: 1fr; } }
   .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
   .chart-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
   .chart-wrap { position: relative; height: 220px; }
-
-  /* Session table */
   .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
   .table-card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -66,13 +56,11 @@
   .model-badge.opus { background: rgba(251,191,36,.15); color: var(--warn); }
   .title-cell { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .token-num { font-family: monospace; color: var(--accent2); }
-
-  footer { text-align: center; padding: 24px; color: var(--muted); font-size: 12px; }
   .peak-badge { display:inline-block; background: rgba(245,158,11,.15); border:1px solid var(--warn); border-radius:6px; padding:3px 10px; font-size:11px; font-weight:600; color:var(--warn); margin-left:10px; }
+  footer { text-align: center; padding: 24px; color: var(--muted); font-size: 12px; }
 </style>
 </head>
 <body>
-
 <header>
   <h1>⚡ Claude <span>Session Dashboard</span><span class="peak-badge" id="peakBadge" style="display:none">🔥 PEAK HOURS</span></h1>
   <div style="display:flex;align-items:center;gap:16px">
@@ -80,146 +68,51 @@
     <button class="refresh-btn" onclick="location.reload()">↻ Refresh</button>
   </div>
 </header>
-
 <main>
-
-  <!-- KPI Cards -->
   <div class="kpi-row">
-    <div class="kpi accent">
-      <div class="kpi-label">Today's Sessions</div>
-      <div class="kpi-value" id="todaySessions"></div>
-      <div class="kpi-sub" id="todayDate"></div>
-    </div>
-    <div class="kpi teal">
-      <div class="kpi-label">Today's Est. Tokens</div>
-      <div class="kpi-value" id="todayTokens"></div>
-      <div class="kpi-sub">~3.5 bytes/token estimate</div>
-    </div>
-    <div class="kpi warn">
-      <div class="kpi-label">14-Day Window Used</div>
-      <div class="kpi-value" id="windowPct"></div>
-      <div class="kpi-sub" id="windowSub"></div>
-    </div>
-    <div class="kpi ok">
-      <div class="kpi-label">All-Time Sessions</div>
-      <div class="kpi-value" id="totalSessions"></div>
-      <div class="kpi-sub" id="totalTokensSub"></div>
-    </div>
+    <div class="kpi accent"><div class="kpi-label">Today's Sessions</div><div class="kpi-value" id="todaySessions"></div><div class="kpi-sub" id="todayDate"></div></div>
+    <div class="kpi teal"><div class="kpi-label">Today's Est. Tokens</div><div class="kpi-value" id="todayTokens"></div><div class="kpi-sub">~3.5 bytes/token estimate</div></div>
+    <div class="kpi warn"><div class="kpi-label">14-Day Window Used</div><div class="kpi-value" id="windowPct"></div><div class="kpi-sub" id="windowSub"></div></div>
+    <div class="kpi ok"><div class="kpi-label">All-Time Sessions</div><div class="kpi-value" id="totalSessions"></div><div class="kpi-sub" id="totalTokensSub"></div></div>
   </div>
-
-  <!-- 14-Day Window Bar -->
   <div class="window-card">
     <h2>📊 14-Day Rolling Window</h2>
-    <div class="progress-bar-outer">
-      <div class="progress-bar-inner" id="windowBar" style="width:0%"></div>
-    </div>
-    <div class="progress-labels">
-      <span>0</span>
-      <span id="windowLabel"></span>
-      <span id="windowBudgetLabel"></span>
-    </div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="windowBar" style="width:0%"></div></div>
+    <div class="progress-labels"><span>0</span><span id="windowLabel"></span><span id="windowBudgetLabel"></span></div>
   </div>
-
-  <!-- Charts -->
   <div class="charts-row">
-    <div class="chart-card">
-      <h2>📅 Sessions Per Day (14 days)</h2>
-      <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h2>🕐 Today's Token Usage by Hour</h2>
-      <div class="chart-wrap"><canvas id="hourlyChart"></canvas></div>
-    </div>
+    <div class="chart-card"><h2>📅 Sessions Per Day (14 days)</h2><div class="chart-wrap"><canvas id="dailyChart"></canvas></div></div>
+    <div class="chart-card"><h2>🕐 Today's Token Usage by Hour</h2><div class="chart-wrap"><canvas id="hourlyChart"></canvas></div></div>
   </div>
-
-  <!-- Session Table -->
   <div class="table-card">
     <h2>🗂 Recent Sessions</h2>
-    <table>
-      <thead><tr><th>Time</th><th>Title</th><th>Model</th><th>Est. Tokens</th></tr></thead>
-      <tbody id="sessionTable"></tbody>
-    </table>
+    <table><thead><tr><th>Time</th><th>Title</th><th>Model</th><th>Est. Tokens</th></tr></thead>
+    <tbody id="sessionTable"></tbody></table>
   </div>
-
 </main>
-
-<footer>Claude Session Dashboard — auto-refreshed 5x daily via scheduled task · <a href="https://github.com/jay-commitsAI/claude-token-tracker" style="color:var(--accent)">GitHub</a></footer>
-
+<footer>Claude Session Dashboard — auto-refreshed 5x daily · <a href="https://github.com/jay-commitsAI/claude-token-tracker" style="color:var(--accent)">GitHub</a></footer>
 <script>
-const DATA = {"generatedAt":"2026-04-15T21:02:42.367026+00:00","today":"2026-04-15","todaySessionCount":9,"todayTokens":1890889,"totalSessions":296,"totalTokens":75285933,"windowTokens":23249526,"windowBudget":5000000,"windowPct":465.0,"windowStartISO":"2026-04-02T00:00:00+00:00","dailyLabels":["04-02","04-03","04-04","04-05","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13","04-14","04-15"],"dailySessions":[7,9,8,14,12,16,18,12,14,10,10,15,9,9],"dailyTokensK":[820.6,1220.5,1173.5,1680.3,1558.0,1742.1,2073.5,1391.5,1591.2,1530.2,1779.4,2998.4,1799.5,1890.9],"hourlyTokensK":[221.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,626.1,0.0,0.0,0.0,0.0,209.1,0.0,417.5,0.0,208.2,208.2,0.0,0.0],"recentSessions":[{"timestamp":"2026-03-30T16:51:51.977000+00:00","title":"Mar 30 \u2013 Noon check","model":"claude-sonnet-4-6","tokensK":685.6},{"timestamp":"2026-03-25T04:49:31.400000+00:00","title":"Stock research signal dashboard","model":"claude-haiku-4-5-20251001","tokensK":76.9},{"timestamp":"2026-04-07T18:29:58.632000+00:00","title":"SEO audit and competitor analysis picnics","model":"claude-sonnet-4-6","tokensK":103.4},{"timestamp":"2026-03-29T16:23:46.143000+00:00","title":"Restore missing features and deploy versions","model":"claude-sonnet-4-6","tokensK":608.9},{"timestamp":"2026-04-02T03:52:04.477000+00:00","title":"Create and compare five design color themes","model":"claude-sonnet-4-6","tokensK":86.1}],"modelCounts":{"claude-sonnet-4-6":144,"claude-haiku-4-5-20251001":147,"claude-opus-4-6":5}};
-
-// Populate KPIs
-document.getElementById('genTime').textContent = 'Generated: ' + new Date(DATA.generatedAt).toLocaleString();
-document.getElementById('todaySessions').textContent = DATA.todaySessionCount;
-document.getElementById('todayDate').textContent = DATA.today;
-document.getElementById('todayTokens').textContent = (DATA.todayTokens/1e6).toFixed(2)+'M';
-document.getElementById('windowPct').textContent = DATA.windowPct.toFixed(1)+'%';
-document.getElementById('windowSub').textContent = (DATA.windowTokens/1e6).toFixed(2)+'M of '+(DATA.windowBudget/1e6).toFixed(0)+'M budget';
-document.getElementById('totalSessions').textContent = DATA.totalSessions;
-document.getElementById('totalTokensSub').textContent = (DATA.totalTokens/1e6).toFixed(1)+'M total tokens';
-
-// Window bar
-const pct = Math.min(DATA.windowPct, 100);
-const bar = document.getElementById('windowBar');
-bar.style.width = pct + '%';
-bar.className = 'progress-bar-inner ' + (DATA.windowPct >= 100 ? 'bar-danger' : DATA.windowPct >= 75 ? 'bar-warn' : 'bar-ok');
-document.getElementById('windowLabel').textContent = DATA.windowPct.toFixed(1)+'% used';
-document.getElementById('windowBudgetLabel').textContent = (DATA.windowBudget/1e6).toFixed(0)+'M budget';
-
-// Peak hours badge
-const etHour = (new Date().getUTCHours() - 4 + 24) % 24;
-if (etHour >= 8 && etHour < 14) document.getElementById('peakBadge').style.display = 'inline-block';
-
-// Daily chart
-new Chart(document.getElementById('dailyChart'), {
-  type: 'bar',
-  data: {
-    labels: DATA.dailyLabels,
-    datasets: [
-      { label: 'Sessions', data: DATA.dailySessions, backgroundColor: 'rgba(124,110,245,0.7)', borderRadius: 6 },
-      { label: 'Tokens (K)', data: DATA.dailyTokensK, backgroundColor: 'rgba(94,234,212,0.4)', borderRadius: 6, yAxisID: 'y2' }
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } } },
-    scales: {
-      x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#2d3148' } },
-      y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#2d3148' } },
-      y2: { position: 'right', ticks: { color: '#5eead4', font: { size: 10 } }, grid: { display: false } }
-    }
-  }
-});
-
-// Hourly chart
-new Chart(document.getElementById('hourlyChart'), {
-  type: 'bar',
-  data: {
-    labels: Array.from({length:24}, (_,i) => i===0?'12a':i<12?i+'a':i===12?'12p':(i-12)+'p'),
-    datasets: [{ label: 'Tokens (K)', data: DATA.hourlyTokensK, backgroundColor: DATA.hourlyTokensK.map((_,i) => i===new Date().getHours()?'rgba(245,158,11,0.8)':'rgba(124,110,245,0.5)'), borderRadius: 4 }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { ticks: { color: '#64748b', font: { size: 9 }, maxRotation: 0 }, grid: { color: '#2d3148' } },
-      y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#2d3148' } }
-    }
-  }
-});
-
-// Recent sessions table
-const tbody = document.getElementById('sessionTable');
-DATA.recentSessions.forEach(s => {
-  const cls = s.model.includes('haiku') ? 'haiku' : s.model.includes('sonnet') ? 'sonnet' : 'opus';
-  const name = s.model.includes('haiku') ? 'Haiku' : s.model.includes('sonnet') ? 'Sonnet' : 'Opus';
-  tbody.innerHTML += `<tr>
-    <td style="color:var(--muted);font-size:12px;white-space:nowrap">${new Date(s.timestamp).toLocaleString()}</td>
-    <td class="title-cell">${s.title}</td>
-    <td><span class="model-badge ${cls}">${name}</span></td>
-    <td class="token-num">${s.tokensK}K</td>
-  </tr>`;
-});
+const DATA = {"generatedAt":"2026-04-15T21:12:31.216024+00:00","today":"2026-04-15","todaySessionCount":9,"todayTokens":1890427,"totalSessions":296,"totalTokens":75285471,"windowTokens":23249064,"windowBudget":5000000,"windowPct":465.0,"windowStartISO":"2026-04-02T00:00:00+00:00","dailyLabels":["04-02","04-03","04-04","04-05","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13","04-14","04-15"],"dailySessions":[7,9,8,14,12,16,18,12,14,10,10,15,9,9],"dailyTokensK":[820.6,1220.5,1173.5,1680.3,1558.0,1742.1,2073.5,1391.5,1591.2,1530.2,1779.4,2998.4,1799.5,1890.4],"hourlyTokensK":[221.8,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,626.1,0.0,0.0,0.0,0.0,209.1,0.0,417.5,0.0,208.0,208.0,0.0,0.0],"recentSessions":[{"timestamp":"2026-03-30T16:51:51.977000+00:00","title":"Mar 30 \u2013 Noon check","model":"claude-sonnet-4-6","tokensK":685.6},{"timestamp":"2026-03-25T04:49:31.400000+00:00","title":"Stock research signal dashboard","model":"claude-haiku-4-5-20251001","tokensK":76.9},{"timestamp":"2026-04-07T18:29:58.632000+00:00","title":"SEO audit and competitor analysis picnics","model":"claude-sonnet-4-6","tokensK":103.4},{"timestamp":"2026-03-29T16:23:46.143000+00:00","title":"Restore missing features and deploy versions","model":"claude-sonnet-4-6","tokensK":608.9},{"timestamp":"2026-04-02T03:52:04.477000+00:00","title":"Create and compare five design color themes","model":"claude-sonnet-4-6","tokensK":86.1}],"modelCounts":{"claude-sonnet-4-6":145,"claude-haiku-4-5-20251001":147,"claude-opus-4-6":4}};
+document.getElementById('genTime').textContent='Generated: '+new Date(DATA.generatedAt).toLocaleString();
+document.getElementById('todaySessions').textContent=DATA.todaySessionCount;
+document.getElementById('todayDate').textContent=DATA.today;
+document.getElementById('todayTokens').textContent=(DATA.todayTokens/1e6).toFixed(2)+'M';
+document.getElementById('windowPct').textContent=DATA.windowPct.toFixed(1)+'%';
+document.getElementById('windowSub').textContent=(DATA.windowTokens/1e6).toFixed(2)+'M of '+(DATA.windowBudget/1e6).toFixed(0)+'M budget';
+document.getElementById('totalSessions').textContent=DATA.totalSessions;
+document.getElementById('totalTokensSub').textContent=(DATA.totalTokens/1e6).toFixed(1)+'M total tokens';
+const pct=Math.min(DATA.windowPct,100);
+const bar=document.getElementById('windowBar');
+bar.style.width=pct+'%';
+bar.className='progress-bar-inner '+(DATA.windowPct>=100?'bar-danger':DATA.windowPct>=75?'bar-warn':'bar-ok');
+document.getElementById('windowLabel').textContent=DATA.windowPct.toFixed(1)+'% used';
+document.getElementById('windowBudgetLabel').textContent=(DATA.windowBudget/1e6).toFixed(0)+'M budget';
+const etHour=(new Date().getUTCHours()-4+24)%24;
+if(etHour>=8&&etHour<14)document.getElementById('peakBadge').style.display='inline-block';
+new Chart(document.getElementById('dailyChart'),{type:'bar',data:{labels:DATA.dailyLabels,datasets:[{label:'Sessions',data:DATA.dailySessions,backgroundColor:'rgba(124,110,245,0.7)',borderRadius:6},{label:'Tokens (K)',data:DATA.dailyTokensK,backgroundColor:'rgba(94,234,212,0.4)',borderRadius:6,yAxisID:'y2'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2d3148'}},y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2d3148'}},y2:{position:'right',ticks:{color:'#5eead4',font:{size:10}},grid:{display:false}}}}});
+new Chart(document.getElementById('hourlyChart'),{type:'bar',data:{labels:Array.from({length:24},(_,i)=>i===0?'12a':i<12?i+'a':i===12?'12p':(i-12)+'p'),datasets:[{label:'Tokens (K)',data:DATA.hourlyTokensK,backgroundColor:DATA.hourlyTokensK.map((_,i)=>i===new Date().getHours()?'rgba(245,158,11,0.8)':'rgba(124,110,245,0.5)'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#64748b',font:{size:9},maxRotation:0},grid:{color:'#2d3148'}},y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2d3148'}}}}});
+const tbody=document.getElementById('sessionTable');
+DATA.recentSessions.forEach(s=>{const cls=s.model.includes('haiku')?'haiku':s.model.includes('sonnet')?'sonnet':'opus';const name=s.model.includes('haiku')?'Haiku':s.model.includes('sonnet')?'Sonnet':'Opus';tbody.innerHTML+=`<tr><td style="color:var(--muted);font-size:12px;white-space:nowrap">${new Date(s.timestamp).toLocaleString()}</td><td class="title-cell">${s.title}</td><td><span class="model-badge ${cls}">${name}</span></td><td class="token-num">${s.tokensK}K</td></tr>`;});
 </script>
 </body>
 </html>
