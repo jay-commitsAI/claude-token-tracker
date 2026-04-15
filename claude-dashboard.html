@@ -150,7 +150,7 @@
     <div class="container">
         <div class="header">
             <h1>Claude Token Tracker</h1>
-            <p>Intraday usage dashboard • Last updated <span id="generatedAt">2026-04-14T04:45:00</span></p>
+            <p>Intraday usage dashboard • Last updated <span id="generatedAt">2026-04-15 06:00:00</span></p>
         </div>
         
         <div class="metrics-grid">
@@ -198,7 +198,7 @@
     </div>
 
     <script>
-        const DATA = {generatedAt:"2026-04-14T04:45:00Z",today:"2026-04-14",todaySessionCount:2,todayTokens:400000,totalSessions:281,totalTokens:71710000,windowTokens:798500,windowBudget:1000000,windowPct:79.85,windowStartISO:"2026-04-01T04:45:00Z",dailyLabels:["04-01","04-02","04-03","04-04","04-05","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13","04-14"],dailySessions:[15,7,9,8,14,12,16,18,12,14,10,10,15,2],dailyTokensK:[3700.6,820.6,1220.5,1173.5,1680.3,1558.0,1742.1,2073.5,1296.3,1461.5,1480.2,1732.0,2989.3,400.0],hourlyTokensK:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,400.0],recentSessions:[{timestamp:"2026-04-14T04:45:00Z",title:"Claude usage intraday",model:"claude-haiku-4-5-20251001",tokensK:200.0},{timestamp:"2026-04-14T00:31:23Z",title:"Claude usage intraday",model:"claude-haiku-4-5-20251001",tokensK:200.0},{timestamp:"2026-04-13T23:48:43Z",title:"V2 Design Direction and Build Plan",model:"claude-sonnet-4-6",tokensK:198.7},{timestamp:"2026-04-13T21:54:38Z",title:"Fix scheduled market recap automation",model:"claude-sonnet-4-6",tokensK:199.3},{timestamp:"2026-04-13T20:05:37Z",title:"Close recap",model:"claude-haiku-4-5-20251001",tokensK:199.4}],modelCounts:{"claude-haiku-4-5-20251001":138,"claude-sonnet-4-6":139,"claude-opus-4-6":4}};
+        const DATA = {generatedAt:"2026-04-15T06:00:00Z",today:"2026-04-14",todaySessionCount:2,todayTokens:400000,totalSessions:281,totalTokens:71710000,windowTokens:798500,windowBudget:1000000,windowPct:79.85,windowStartISO:"2026-04-01T04:45:00Z",dailyLabels:["04-01","04-02","04-03","04-04","04-05","04-06","04-07","04-08","04-09","04-10","04-11","04-12","04-13","04-14"],dailySessions:[15,7,9,8,14,12,16,18,12,14,10,10,15,2],dailyTokensK:[3700.6,820.6,1220.5,1173.5,1680.3,1558.0,1742.1,2073.5,1296.3,1461.5,1480.2,1732.0,2989.3,400.0],hourlyTokensK:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,400.0],recentSessions:[{timestamp:"2026-04-14T04:45:00Z",title:"Claude usage intraday",model:"claude-haiku-4-5-20251001",tokensK:200.0},{timestamp:"2026-04-14T00:31:23Z",title:"Claude usage intraday",model:"claude-haiku-4-5-20251001",tokensK:200.0},{timestamp:"2026-04-13T23:48:43Z",title:"V2 Design Direction and Build Plan",model:"claude-sonnet-4-6",tokensK:198.7},{timestamp:"2026-04-13T21:54:38Z",title:"Fix scheduled market recap automation",model:"claude-sonnet-4-6",tokensK:199.3},{timestamp:"2026-04-13T20:05:37Z",title:"Close recap",model:"claude-haiku-4-5-20251001",tokensK:199.4}],modelCounts:{"claude-haiku-4-5-20251001":138,"claude-sonnet-4-6":139,"claude-opus-4-6":4}};
 
         // Update metrics
         document.getElementById('generatedAt').textContent = new Date(DATA.generatedAt).toLocaleString();
