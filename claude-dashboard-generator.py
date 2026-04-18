@@ -69,7 +69,8 @@ def load_sessions(session_dir: Path) -> list:
                 "sizeBytes": size,
                 "sizeKB": round(size / 1024, 1),
                 "estimatedTokens": round(base_tokens * weight),
-                "hour": h_str
+                "hour": h_str,
+                "isPeak": True if weight > 1.0 else False
             })
         except Exception as e:
             print(f"  Skip {f.name}: {e}", file=sys.stderr)
@@ -414,13 +415,18 @@ def build_html(data: dict) -> str:
     for s in data["recentSessions"]:
         time_str = s["createdAt"][5:16].replace("T", " ")
         bar_w = round(s["sizeKB"] / max_size * 60)
+        
+        # Add visual warning for Peak periods
+        peak_badge = "<span style='color:var(--warn); font-size:10px; margin-left:6px'>☢️ PEAK</span>" if s.get("isPeak") else ""
+        token_color = "var(--warn)" if s.get("isPeak") else "var(--accent2)"
+        
         rows.append(
             f"<tr>"
-            f"<td style='color:var(--muted);font-size:12px;white-space:nowrap'>{time_str}</td>"
+            f"<td style='color:var(--muted);font-size:12px;white-space:nowrap'>{time_str}{peak_badge}</td>"
             f"<td class='title-cell'>{s['title']}</td>"
             f"<td>{model_badge(s['model'])}</td>"
             f"<td style='white-space:nowrap'>{s['sizeKB']}KB<span class='size-bar' style='width:{bar_w}px'></span></td>"
-            f"<td class='token-num'>{fmt_tokens(s['estimatedTokens'])}</td>"
+            f"<td class='token-num' style='color:{token_color}'>{fmt_tokens(s['estimatedTokens'])}</td>"
             f"</tr>"
         )
 
