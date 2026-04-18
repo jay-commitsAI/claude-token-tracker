@@ -53,6 +53,13 @@ def load_sessions(session_dir: Path) -> list:
                 last_activity = datetime.fromtimestamp(last_activity / 1000).isoformat()
             created = str(created)
             last_activity = str(last_activity)
+            h_str = created[11:13] if len(created) >= 13 else "00"
+            h_int = int(h_str) if h_str.isdigit() else 0
+            
+            # Apply 1.6x multiplier for "Peak Hours" (8:00 AM to 2:59 PM)
+            base_tokens = size / BYTES_PER_TOKEN
+            weight = 1.6 if 8 <= h_int <= 14 else 1.0
+
             sessions.append({
                 "id": f.stem.replace("local_", ""),
                 "title": str(data.get("title", "Untitled")),
@@ -61,8 +68,8 @@ def load_sessions(session_dir: Path) -> list:
                 "model": str(data.get("model", "unknown")),
                 "sizeBytes": size,
                 "sizeKB": round(size / 1024, 1),
-                "estimatedTokens": round(size / BYTES_PER_TOKEN),
-                "hour": created[11:13] if len(created) >= 13 else "00"
+                "estimatedTokens": round(base_tokens * weight),
+                "hour": h_str
             })
         except Exception as e:
             print(f"  Skip {f.name}: {e}", file=sys.stderr)
