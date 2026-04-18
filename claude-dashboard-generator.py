@@ -30,7 +30,7 @@ def find_session_dir(base: Path) -> Path:
             return Path(root)
     return base
 
-WINDOW_BUDGET = 44_000   # estimated tokens per 5-hour Pro window
+WINDOW_BUDGET = 650_000   # Calibrated to real usage (242k tokens = 37%)
 BYTES_PER_TOKEN = 3.5     # calibrated estimate from session analysis
 OUTPUT_FILE = Path(__file__).parent / "claude-dashboard.html"
 
